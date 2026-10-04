@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load ui %}
+{% block content %}
+{% form_steps form as steps %}
+<div class="modal-wrap form-modal"><div class="modal modal-form">
+<div class="calc-head"><strong>{{ page_title }}</strong><a class="btn sm" href="{{ cancel_url|default:'/' }}" aria-label="Close" data-modal-close>&times;</a></div>
+<form method="post" class="form wizard" data-wizard="{{ steps|length }}" novalidate>{% csrf_token %}
+  {{ form.non_field_errors }}
+  {% if steps|length > 1 %}
+  <ol class="wiz-progress" aria-label="Progress">
+    {% for st in steps %}<li data-step="{{ forloop.counter0 }}"><span class="wiz-dot">{{ forloop.counter }}</span><span class="wiz-label">{{ st.title }}</span></li>{% endfor %}
+  </ol>
+  {% endif %}
+  {% for st in steps %}
+  <section class="wiz-step" data-step="{{ forloop.counter0 }}" {% if st.has_errors %}data-error="1"{% endif %}>
+    {% if st.title %}<header class="wiz-head"><small class="muted">Step {{ forloop.counter }} of {{ steps|length }}</small><h2>{{ st.title }}</h2>{% if st.hint %}<p class="muted">{{ st.hint }}</p>{% endif %}</header>{% endif %}
+    <div class="fields">
+    {% for f in st.fields %}
+      <div class="field {% if f.field.widget.input_type == 'checkbox' %}check{% endif %}">
+        <label for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %} <span class="req">*</span>{% endif %}</label>{{ f }}
+        {% if f.help_text %}<small>{{ f.help_text }}</small>{% endif %}{{ f.errors }}
+      </div>
+    {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+  {% for h in form.hidden_fields %}{{ h }}{% endfor %}
+  <div class="btns wiz-nav">
+    <a class="btn" href="{{ cancel_url|default:'/' }}">Cancel</a>
+    <span class="spacer"></span>
+    <button type="button" class="btn" data-wiz="back" hidden>&larr; Back</button>
+    <button type="button" class="btn primary" data-wiz="next" hidden>Continue &rarr;</button>
+    <button class="btn primary" data-wiz="submit">{{ submit_label|default:"Save" }}</button>
+  </div>
+</form>
+</div></div>
+{% endblock %}

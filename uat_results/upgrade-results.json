@@ -1,0 +1,7 @@
+[
+  {
+    "test": "UPGRADE_01_legacy_data_preserved",
+    "result": "Pass",
+    "details": "Legacy stock, branch cost, reorder fields, ownership, invoice totals and transaction branch links preserved."
+  }
+]

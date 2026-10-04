@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn primary" href="{% url 'customer_create' %}">Add customer</a>{% endblock %}
+{% block content %}<form class="filters" method="get"><input type="search" name="q" value="{{ g.q }}" placeholder="Search name, phone or plate number"><button class="btn">Search</button></form>
+<section class="card"><div class="tablewrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Type</th><th class="num">Credit limit</th><th class="num">Owes</th></tr></thead><tbody>
+{% for c in customers %}<tr><td><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></td><td>{{ c.phone }}</td><td>{{ c.get_customer_type_display }}</td><td class="num">{% if c.credit_limit %}{% money c.credit_limit %}{% else %}—{% endif %}</td><td class="num {% if c.balance > 0 %}stockout{% endif %}">{% money c.balance %}</td></tr>
+{% empty %}<tr><td colspan="5" class="empty">No customers yet.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</section>{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block actions %}<a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}csv=1">Download CSV</a><button class="btn" onclick="window.print()">Print</button>
+  {% if post_action %}<form method="post" action="{{ post_action.url }}">{% csrf_token %}<button class="btn primary">{{ post_action.label }}</button></form>{% endif %}{% endblock %}
+{% block content %}
+{% if dates %}<form class="filters no-print" method="get"><label>From <input type="date" name="start" value="{{ dates.0|date:'Y-m-d' }}"></label><label>To <input type="date" name="end" value="{{ dates.1|date:'Y-m-d' }}"></label><button class="btn">Update</button></form>{% endif %}
+{% if extra_filter %}<form class="filters no-print" method="get"><label>{{ extra_filter.label }} <input type="number" min="1" name="{{ extra_filter.name }}" value="{{ extra_filter.value }}"></label><button class="btn">Update</button></form>{% endif %}
+<section class="card">
+  {% if note %}<p class="muted">{{ note }}</p>{% endif %}
+  {% if empty %}<p class="empty">Nothing to show for this selection.</p>{% else %}
+  <div class="tablewrap"><table>
+    <thead><tr>{% for c in columns %}<th class="{% if c.num %}num{% endif %}">{{ c.label }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in rows %}<tr>{% for c in r %}<td class="{% if c.num %}num{% endif %}">{{ c.v }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+    {% if totals %}<tfoot><tr>{% for c in totals %}<td class="{% if c.num %}num{% endif %}">{{ c.v }}</td>{% endfor %}</tr></tfoot>{% endif %}
+  </table></div>{% endif %}
+</section>
+{% endblock %}

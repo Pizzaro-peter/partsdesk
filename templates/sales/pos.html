@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div id="pos" class="pos" data-search-url="{% url 'part_search_api' %}" data-checkout-url="{% url 'pos_checkout' %}"
+     data-tax-rate="{{ cfg.tax_rate }}" data-tax-inclusive="{% if cfg.prices_include_tax %}1{% else %}0{% endif %}"
+     data-tax-name="{{ cfg.tax_name }}" data-currency="{{ cfg.currency_symbol }}"
+     data-max-discount="{{ max_discount }}" data-can-override="{{ can_override }}" data-request-id="{{ request_id }}" data-draft-key="{{ request.tenant.pk }}-{{ request.branch.pk }}-{{ user.pk }}">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  <section class="pos-main">
+    <div class="card pos-toolbar">
+      <div class="pos-search">
+        <label for="q" class="sr">Find a part</label>
+        <input id="q" type="text" autocomplete="off" placeholder="Scan barcode or search code, name, vehicle — “oil filter hilux 2015”   [F2]">
+      </div>
+      <div class="pos-tools">
+        <button type="button" class="btn" id="calc-btn" title="Calculator [F3]">&#9638; Calculator</button>
+        <button type="button" class="btn" id="draft-btn" title="Held sales [F7]">&#128193; Drafts <span class="badge" id="draft-count">0</span></button>
+      </div>
+    </div>
+    <div class="card pos-products">
+      <div class="pos-products-head"><h2>Products</h2><small id="result-note" class="muted">All available parts</small></div>
+      <div id="results" class="pos-results"></div>
+    </div>
+    <div class="card calc" id="calc" hidden>
+      <div class="calc-head"><strong>Calculator</strong><button type="button" class="btn sm" id="calc-close" aria-label="Close calculator">&times;</button></div>
+      <div class="calc-expr" id="calc-expr"></div>
+      <div class="calc-display" id="calc-display">0</div>
+      <div class="calc-keys" id="calc-keys"></div>
+    </div>
+  </section>
+  <aside>
+    <div class="card ticket">
+      <div class="ticket-head"><h2>Current sale</h2><button type="button" class="btn sm" id="clear-btn">Clear</button></div>
+      <label>Customer (optional — leave blank for a walk-in)</label>
+      {% include "partials/picker.html" with kind="customer" url="/sales/api/customers/" field=None placeholder="Search name, phone or plate…" optional=1 %}
+      <input type="hidden" id="customer-hidden">
+      <small id="cust-note" class="muted"></small>
+      <div class="ticket-lines">
+      <table>
+        <thead><tr><th>Item</th><th>Price</th><th>Qty</th><th>Disc %</th><th class="num">Total</th><th></th></tr></thead>
+        <tbody id="cart-body"></tbody>
+      </table>
+      <p id="empty-cart" class="empty">No items yet — search to add parts.</p>
+      </div>
+      <div class="totals">
+        <div id="row-disc"><span>Discount</span><strong id="t-disc"></strong></div>
+        <div><span>Subtotal</span><strong id="t-gross"></strong></div>
+        <div id="row-tax"><span id="t-tax-label"></span><strong id="t-tax"></strong></div>
+        <div class="grand"><span>Total</span><strong id="t-total"></strong></div>
+      </div>
+      <div class="ticket-actions">
+        <button type="button" id="hold-btn" class="btn lg">Hold <kbd>F7</kbd></button>
+        <button id="checkout" type="button" class="btn primary lg" disabled>Charge <kbd>F4</kbd></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="drawer-wrap" id="drafts" hidden>
+    <div class="drawer">
+      <div class="calc-head"><strong>Held sales</strong><button type="button" class="btn sm" id="drafts-close" aria-label="Close">&times;</button></div>
+      <div id="drafts-list"></div>
+    </div>
+  </div>
+
+  <div class="co-wrap" id="pay-modal" hidden>
+    <div class="co" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+      <header class="co-head">
+        <div><strong id="pay-title">Checkout</strong><small id="pay-summary"></small></div>
+        <div class="co-steps"><span class="done">1 Cart</span><span class="on">2 Payment</span><span>3 Receipt</span></div>
+        <button type="button" class="btn sm" id="pay-close" aria-label="Close">&times; <kbd>Esc</kbd></button>
+      </header>
+      <div class="co-body">
+        <section class="co-order">
+          <h3>Order review</h3>
+          <div class="co-cust" id="pay-cust"></div>
+          <div class="co-lines" id="pay-lines"></div>
+          <div class="co-totals" id="pay-totals"></div>
+          <label for="notes">Invoice note</label>
+          <textarea id="notes" placeholder="Optional note printed on the invoice" rows="2"></textarea>
+        </section>
+        <section class="co-pay">
+          <div class="co-due"><span>Total due</span><strong id="pay-due">0.00</strong></div>
+          <select id="method" hidden>{% for v, l in methods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select>
+          <h3>Payment method</h3>
+          <div class="pay-methods" id="pay-methods">{% for v, l in methods %}<button type="button" class="method" data-method="{{ v }}">{{ l }}</button>{% endfor %}</div>
+          <div class="co-tender">
+            <label for="paid">Amount tendered</label>
+            <input id="paid" type="text" inputmode="decimal" autocomplete="off">
+          </div>
+          <div class="co-keys" id="co-keys"></div>
+          <div class="quick-cash" id="quick-cash"></div>
+          <div class="co-result" id="change"></div>
+          <p id="err" class="errbox"></p>
+        </section>
+      </div>
+      <footer class="co-foot">
+        <button type="button" class="btn lg" id="pay-cancel">&larr; Back to sale</button>
+        <button type="button" class="btn primary lg" id="confirm-pay">Complete sale <kbd>Enter</kbd></button>
+      </footer>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/pos.js' %}"></script>{% endblock %}

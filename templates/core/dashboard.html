@@ -1,0 +1,47 @@
+{% extends "base.html" %}{% load ui %}
+{% block page_heading %}Dashboard{% endblock %}
+{% block actions %}{% endblock %}
+{% block content %}
+<section class="dash-hero">
+  <div>
+    <small>{% now "l, j F Y" %}</small>
+    <h2>Welcome back, {{ user.first_name|default:user.display_name }}</h2>
+    <p>Here’s what’s happening at <strong>{{ active_branch.name }}</strong> today.</p>
+  </div>
+  <div class="dash-actions">
+    {% if user.role != "mechanic" and user.role != "storekeeper" %}<a class="btn primary" href="{% url 'pos' %}">+ New sale</a>{% endif %}
+    {% if user.role != "storekeeper" %}<a class="btn" href="{% url 'job_create' %}">+ Job card</a>{% endif %}
+    {% if user.role == "owner" or user.role == "manager" or user.role == "storekeeper" %}<a class="btn" href="{% url 'po_create' %}">+ Purchase order</a>{% endif %}
+  </div>
+</section>
+
+<section class="kpis">
+{% for k in kpis %}
+  <{% if k.href %}a href="{{ k.href }}"{% else %}div{% endif %} class="kpi"><small class="kpi-label">{{ k.label }}</small><strong>{% if k.kind == "money" %}{% money k.value %}{% else %}{{ k.value }}{% endif %}</strong><small class="kpi-sub">{{ k.sub }}{% if k.href %} &rarr;{% endif %}</small></{% if k.href %}a{% else %}div{% endif %}>
+{% endfor %}
+</section>
+
+{% if bars %}
+<section class="card panel">
+  <header class="panel-head"><h2>Sales trend</h2><small class="muted">Last 7 days, excluding tax</small></header>
+  <div class="bars">{% for b in bars %}<div title="{% money b.revenue %}"><span class="bar-val">{% money b.revenue %}</span><i style="height:{{ b.pct }}%"></i>{{ b.day|date:"D j" }}</div>{% endfor %}</div>
+</section>
+{% endif %}
+
+<div class="grid2">
+  {% if can_view_jobs %}
+  <section class="card panel"><header class="panel-head"><h2>Workshop queue</h2><a href="{% url 'job_list' %}">View all</a></header>
+    {% if jobs %}<div class="tablewrap"><table><tbody>{% for j in jobs %}<tr>
+      <td><a href="{{ j.get_absolute_url }}">{{ j.number }}</a></td><td>{{ j.vehicle.reg_number }}<br><small>{{ j.customer.name }}</small></td>
+      <td><span class="badge {{ j.status|status_class }}">{{ j.get_status_display }}</span></td><td class="num">{% if j.promised_date %}<small>due {{ j.promised_date|date:"j M" }}</small>{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+    {% else %}<p class="empty">No open jobs. Check a vehicle in with “Job card”.</p>{% endif %}</section>{% endif %}
+  <section class="card panel"><header class="panel-head"><h2>Needs restocking</h2><a href="{% url 'part_list' %}?stock=low">View all</a></header>
+    {% if low_parts %}<div class="tablewrap"><table><tbody>{% for p in low_parts %}<tr><td><a href="{{ p.part.get_absolute_url }}">{{ p.part.name }}</a><br><small class="mono">{{ p.part.sku }}</small></td>
+      <td class="num {% if p.quantity_on_hand <= 0 %}stockout{% else %}stocklow{% endif %}"><strong>{{ p.quantity_on_hand|qty }}</strong><br><small>reorder at {{ p.reorder_level|qty }}</small></td></tr>{% endfor %}</tbody></table></div>
+    {% else %}<p class="empty">Nothing is below its reorder level.</p>{% endif %}</section>
+</div>
+
+{% if recent_sales %}<section class="card panel"><header class="panel-head"><h2>Recent invoices</h2><a href="{% url 'sale_list' %}">View all</a></header><div class="tablewrap"><table><tbody>{% for s in recent_sales %}<tr>
+  <td><a href="{{ s.get_absolute_url }}">{{ s.number }}</a></td><td>{{ s.customer.name|default:"Walk-in" }}</td><td><small>{{ s.created_at|date:"j M, H:i" }}</small></td>
+  <td class="num">{% money s.total %}</td><td><span class="badge {{ s.status|status_class }}">{{ s.get_status_display }}</span></td></tr>{% endfor %}</tbody></table></div></section>{% endif %}
+{% endblock %}

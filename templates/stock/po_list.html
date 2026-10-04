@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn" href="{% url 'supplier_list' %}">Suppliers</a><a class="btn primary" href="{% url 'po_create' %}">New purchase order</a>{% endblock %}
+{% block content %}
+<form class="filters" method="get"><select name="status"><option value="">All statuses</option>{% for v, l in statuses %}<option value="{{ v }}" {% if g.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select><button class="btn">Filter</button></form>
+<section class="card"><div class="tablewrap"><table><thead><tr><th>Order</th><th>Supplier</th><th>Ordered</th><th>Expected</th><th class="num">Lines</th><th class="num">Total</th><th>Status</th></tr></thead><tbody>
+{% for o in orders %}<tr><td><a href="{{ o.get_absolute_url }}">{{ o.number }}</a></td><td>{{ o.supplier }}</td><td>{{ o.order_date|date:"j M Y" }}</td><td>{{ o.expected_date|date:"j M Y"|default:"—" }}</td><td class="num">{{ o.lines.all|length }}</td><td class="num">{% money o.total %}</td><td><span class="badge {{ o.status|status_class }}">{{ o.get_status_display }}</span></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No purchase orders yet. Create one, or draft them from the low-stock report.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</section>{% endblock %}

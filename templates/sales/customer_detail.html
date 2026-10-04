@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn" href="{% url 'customer_edit' customer.pk %}">Edit</a>{% if can_sell %}<a class="btn" href="{% url 'job_create' %}?customer={{ customer.pk }}">New job card</a><a class="btn primary" href="{% url 'pos' %}">New sale</a>{% endif %}{% endblock %}
+{% block content %}
+<div class="grid2">
+<section class="card"><h2>Details</h2><dl class="facts">
+  <dt>Phone</dt><dd>{{ customer.phone|default:"—" }}</dd><dt>Email</dt><dd>{{ customer.email|default:"—" }}</dd>
+  <dt>Type</dt><dd>{{ customer.get_customer_type_display }}</dd>
+  <dt>Credit limit</dt><dd>{% if customer.credit_limit %}{% money customer.credit_limit %}{% else %}No credit account{% endif %}</dd>
+  <dt>Current balance</dt><dd class="{% if customer.balance > 0 %}stockout{% endif %}"><strong>{% money customer.balance %}</strong></dd>
+  {% if customer.notes %}<dt>Notes</dt><dd>{{ customer.notes|linebreaksbr }}</dd>{% endif %}</dl></section>
+<section class="card"><h2>Vehicles</h2>
+  {% for v in vehicles %}<p style="margin:4px 0"><strong>{{ v.reg_number }}</strong> — {{ v.make }} {{ v.model }} {{ v.year|default:"" }}{% if v.engine %} · {{ v.engine }}{% endif %}</p>
+  {% empty %}<p class="muted">No vehicles on file yet.</p>{% endfor %}
+  <a href="{% url 'vehicle_create' customer.pk %}">Add a vehicle</a></section>
+</div>
+<section class="card"><h2>Recent invoices</h2>{% if sales %}<table><tbody>{% for s in sales %}<tr><td><a href="{{ s.get_absolute_url }}">{{ s.number }}</a></td><td>{{ s.created_at|date:"j M Y" }}</td><td class="num">{% money s.total %}</td><td class="num {% if s.balance_due > 0 %}stockout{% endif %}">{% money s.balance_due %}</td><td><span class="badge {{ s.status|status_class }}">{{ s.get_status_display }}</span></td></tr>{% endfor %}</tbody></table>
+{% else %}<p class="empty">No invoices yet.</p>{% endif %}</section>
+{% if jobs %}<section class="card"><h2>Job cards</h2><table><tbody>{% for j in jobs %}<tr><td><a href="{{ j.get_absolute_url }}">{{ j.number }}</a></td><td>{{ j.vehicle.reg_number }}</td><td>{{ j.created_at|date:"j M Y" }}</td><td><span class="badge {{ j.status|status_class }}">{{ j.get_status_display }}</span></td></tr>{% endfor %}</tbody></table></section>{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+[
+  {
+    "test": "uat_concurrency.ConcurrentTransactions.test_last_unit_sold_once",
+    "result": "Pass"
+  },
+  {
+    "test": "uat_concurrency.ConcurrentTransactions.test_payment_cannot_exceed_balance_in_parallel",
+    "result": "Pass"
+  },
+  {
+    "test": "uat_concurrency.ConcurrentTransactions.test_prefetched_part_removal_does_not_restore_twice",
+    "result": "Pass"
+  },
+  {
+    "test": "uat_concurrency.ConcurrentTransactions.test_same_checkout_key_in_parallel_creates_one_invoice",
+    "result": "Pass"
+  }
+]

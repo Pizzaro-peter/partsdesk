@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn primary" href="{% url 'stock_adjust' %}">Adjust stock</a>{% endblock %}
+{% block content %}
+<form class="filters" method="get">{% if part %}<input type="hidden" name="part" value="{{ part.pk }}"><span class="badge b-info">{{ part.sku }} – {{ part.name }} <a href="{% url 'movement_list' %}">✕</a></span>{% endif %}
+  <select name="reason"><option value="">All movements</option>{% for v, l in reasons %}<option value="{{ v }}" {% if g.reason == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select><button class="btn">Filter</button></form>
+<section class="card"><div class="tablewrap"><table><thead><tr><th>When</th><th>Part</th><th>What</th><th>Reference</th><th class="num">Change</th><th class="num">Balance</th><th>By</th></tr></thead><tbody>
+{% for m in movements %}<tr><td>{{ m.created_at|date:"j M Y, H:i" }}</td><td><a href="{{ m.part.get_absolute_url }}">{{ m.part.name }}</a><br><small class="mono">{{ m.part.sku }}</small></td><td>{{ m.get_reason_display }}<br><small>{{ m.note }}</small></td><td class="mono">{{ m.reference }}</td>
+<td class="num {% if m.quantity < 0 %}stockout{% else %}stockok{% endif %}">{% if m.quantity > 0 %}+{% endif %}{{ m.quantity|qty }}</td><td class="num">{{ m.quantity_after|qty }}</td><td>{{ m.user.display_name|default:"—" }}</td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No stock movements match.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</section>{% endblock %}

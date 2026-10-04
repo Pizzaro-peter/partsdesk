@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block actions %}<a class="btn primary" href="{% url 'supplier_create' %}">Add supplier</a>{% endblock %}
+{% block content %}<section class="card"><div class="tablewrap"><table><thead><tr><th>Supplier</th><th>Contact</th><th>Phone</th><th>Terms</th><th></th></tr></thead><tbody>
+{% for s in suppliers %}<tr><td><strong>{{ s.name }}</strong>{% if not s.is_active %} <span class="badge b-bad">Inactive</span>{% endif %}</td><td>{{ s.contact_person }}</td><td>{{ s.phone }}</td><td>{{ s.payment_terms }}</td><td class="num"><a class="btn sm" href="{% url 'supplier_edit' s.pk %}">Edit</a></td></tr>
+{% empty %}<tr><td colspan="5" class="empty">No suppliers yet.</td></tr>{% endfor %}</tbody></table></div></section>{% endblock %}

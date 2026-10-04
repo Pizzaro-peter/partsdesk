@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load ui tz %}
+{% block actions %}<a class="btn" href="{% url 'audit_list' %}">Business and security events</a><a class="btn" href="{% url 'audit_list' %}?view=requests">Request log</a><a class="btn" href="?{% url_replace csv=1 page=1 %}">Export filtered CSV</a>{% endblock %}
+{% block content %}
+<section class="card">
+<p>Times are shown in Zambia time (UTC+02:00). Records are read-only. Request IDs link events to page visits and API calls.</p>
+{% if errors %}<ul class="messages">{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+<form method="get" class="filters no-print">
+<input type="hidden" name="view" value="{{ log_view }}">
+<label>Branch <select name="branch"><option value="all" {% if branch_value == 'all' %}selected{% endif %}>All assigned branches</option>{% for b in audit_branches %}<option value="{{ b.pk }}" {% if branch_value == b.pk|stringformat:'s' %}selected{% endif %}>{{ b.name }}</option>{% endfor %}</select></label>
+<label>User <select name="user"><option value="">All users</option>{% for u in audit_users %}<option value="{{ u.pk }}" {% if g.user == u.pk|stringformat:'s' %}selected{% endif %}>{{ u.username }}</option>{% endfor %}</select></label>
+<label>Result <select name="outcome"><option value="">All results</option><option value="success" {% if g.outcome == 'success' %}selected{% endif %}>Success</option><option value="failure" {% if g.outcome == 'failure' %}selected{% endif %}>Failure</option><option value="denied" {% if g.outcome == 'denied' %}selected{% endif %}>Denied</option></select></label>
+<label>{% if log_view == 'requests' %}Route{% else %}Action{% endif %} <input name="action" value="{{ g.action }}" maxlength="100"></label>
+<label>From <input type="date" name="start" value="{{ g.start }}"></label><label>To <input type="date" name="end" value="{{ g.end }}"></label>
+<label>Search <input name="q" value="{{ g.q }}" placeholder="Record, user or request ID" maxlength="200"></label>
+<button class="btn primary">Filter</button><a class="btn" href="{% url 'audit_list' %}?view={{ log_view }}">Reset</a>
+</form>
+<div class="tablewrap"><table><thead><tr><th>Zambia time</th><th>User</th><th>Branch</th><th>{% if log_view == 'requests' %}Request{% else %}Action{% endif %}</th><th>Target</th><th>Result</th><th>Details</th><th>Request ID / IP</th></tr></thead><tbody>
+{% timezone "Africa/Lusaka" %}{% for e in entries %}<tr><td>{{ e.created_at|date:"j M Y, H:i:s" }}</td><td>{{ e.actor_name|default:"System" }}</td><td>{{ e.branch.name|default:"Business-wide" }}</td><td>{% if log_view == 'requests' %}{{ e.method }} {{ e.route }}{% else %}{{ e.action }}{% endif %}</td><td>{{ e.target }}</td><td>{{ e.outcome }}</td><td>{% if log_view == 'requests' %}HTTP {{ e.status_code }} · {{ e.duration_ms }} ms{% else %}{{ e.detail }}{% if e.changes %}<details><summary>Changes</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{{ e.changes }}</pre></details>{% endif %}{% endif %}</td><td><small>{{ e.request_id }}<br>{{ e.ip_address|default:"Unavailable" }}</small></td></tr>
+{% empty %}<tr><td colspan="8" class="empty">No records match these filters.</td></tr>{% endfor %}{% endtimezone %}
+</tbody></table></div>{% include "partials/pagination.html" %}
+</section>{% endblock %}

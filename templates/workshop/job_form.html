@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}<form method="post" class="card form">{% csrf_token %}
+{{ form.non_field_errors }}
+<div class="fields">
+  <div class="field">
+    <label>Customer</label>
+    {% if customer %}<input type="text" value="{{ customer.name }}" readonly>{{ form.customer }}
+    {% else %}{% include "partials/picker.html" with kind="customer" url="/sales/api/customers/" field=form.customer placeholder="Search name, phone or plate…" vehicle_select="id_vehicle" %}{% endif %}
+    <small>No customer yet? <a href="{% url 'customer_create' %}" target="_blank">Add one</a>, then come back.</small>{{ form.customer.errors }}
+  </div>
+  <div class="field"><label for="id_vehicle">Vehicle</label>{{ form.vehicle }}{{ form.vehicle.errors }}
+    {% if customer %}<small><a href="{% url 'vehicle_create' customer.pk %}" target="_blank">Add a vehicle for {{ customer.name }}</a></small>{% endif %}</div>
+  <div class="field"><label for="id_odometer">Odometer (km)</label>{{ form.odometer }}</div>
+  <div class="field"><label for="id_assigned_to">Assign to mechanic</label>{{ form.assigned_to }}</div>
+  <div class="field"><label for="id_promised_date">Promised date</label>{{ form.promised_date }}</div>
+  <div class="field" style="grid-column:1/-1"><label for="id_complaint">Customer's complaint / work requested</label>{{ form.complaint }}{{ form.complaint.errors }}</div>
+</div>
+<div class="btns"><button class="btn primary">Open job card</button><a class="btn" href="{% url 'job_list' %}">Cancel</a></div></form>{% endblock %}

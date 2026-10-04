@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block page_heading %}Branches{% endblock %}
+{% block content %}
+<div class="admin-bar">
+  <p class="muted">Locations that hold stock and take sales. Each branch keeps its own stock levels.</p>
+  <button type="button" class="btn primary" data-open="add-modal">+ Add branch</button>
+</div>
+<div class="kpis admin-kpis">
+  <div class="kpi"><span class="kpi-label">Total branches</span><strong>{{ all_branches|length }}</strong></div>
+  <div class="kpi"><span class="kpi-label">Active</span><strong>{{ active_count }}</strong></div>
+  <div class="kpi"><span class="kpi-label">Inactive</span><strong>{{ inactive_count }}</strong></div>
+</div>
+<div class="card tablewrap">
+  <table>
+    <thead><tr><th>Branch</th><th>Code</th><th>Status</th></tr></thead>
+    <tbody>{% for branch in all_branches %}
+      <tr><td><span class="entity"><span class="avatar sq">{{ branch.name|slice:":1"|upper }}</span><strong>{{ branch.name }}</strong></span>{% if branch.pk == active_branch.pk %} <span class="badge b-accent">Current</span>{% endif %}</td>
+        <td class="mono">{{ branch.code }}</td>
+        <td>{% if branch.is_active %}<span class="badge b-ok">Active</span>{% else %}<span class="badge b-warn">Inactive</span>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="3" class="empty">No branches yet.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+
+<div class="modal-wrap" id="add-modal" {% if not form.errors %}hidden{% endif %}>
+  <div class="modal modal-form" role="dialog" aria-modal="true" aria-labelledby="add-title">
+    <div class="modal-head"><h2 id="add-title">Add branch</h2><button type="button" class="btn sm" data-close aria-label="Close">&times;</button></div>
+    <form method="post" class="form">{% csrf_token %}
+      {% if form.non_field_errors %}<p class="errbox">{{ form.non_field_errors }}</p>{% endif %}
+      <div class="fields">{% for f in form %}
+        <div class="field">{{ f.label_tag }}{{ f }}{% if f.help_text %}<small class="muted">{{ f.help_text }}</small>{% endif %}{% for e in f.errors %}<small class="errbox">{{ e }}</small>{% endfor %}</div>
+      {% endfor %}</div>
+      <div class="modal-actions"><button type="button" class="btn" data-close>Cancel</button><button type="submit" class="btn primary">Add branch</button></div>
+    </form>
+  </div>
+</div>
+{% include "partials/admin_modal_js.html" %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · PartsDesk</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body class="auth">
+<main class="auth-split">
+  <section class="auth-pane">
+    <div class="auth-box">
+      <div class="brand" style="border:0;padding:0 0 22px"><span class="brand-mark">PD</span><div><strong style="color:var(--ink)">PartsDesk</strong><small>Parts sales &amp; workshop management</small></div></div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub muted">Sign in to manage sales, stock, procurement and job cards for your business.</p>
+      <form method="post" class="form stack">{% csrf_token %}
+        {% if form.errors %}<ul class="errorlist"><li>That username and password don't match. Try again.</li></ul>{% endif %}
+        <div class="field"><label for="id_username">Username</label>{{ form.username }}</div>
+        <div class="field"><label for="id_password">Password</label>{{ form.password }}</div>
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="btn primary lg" style="width:100%;justify-content:center">Sign in</button>
+      </form>
+      <ul class="auth-steps">
+        <li><span>1</span>Sign in with the account your owner created</li>
+        <li><span>2</span>Pick your branch from the top bar</li>
+        <li><span>3</span>Start selling, receiving stock or opening job cards</li>
+      </ul>
+      <p class="auth-help muted">Forgot your password? Ask your business owner or manager to reset it.</p>
+    </div>
+  </section>
+  <aside class="auth-hero" style="background-image:url('{% static 'img/login-hero.svg' %}')" aria-hidden="true">
+    <div class="auth-hero-text">
+      <h2>One desk for parts, stock and the workshop.</h2>
+      <ul><li>Fast point of sale with held sales</li><li>Branch-level stock and procurement</li><li>Job cards, invoices and audit trail</li></ul>
+    </div>
+  </aside>
+</main>
+</body></html>

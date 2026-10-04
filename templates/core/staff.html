@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block page_heading %}Staff &amp; access{% endblock %}
+{% block content %}
+<div class="admin-bar">
+  <p class="muted">Accounts, roles and the branches each person can work in.</p>
+  <button type="button" class="btn primary" data-open="add-modal">+ Add staff member</button>
+</div>
+<div class="kpis admin-kpis">
+  <div class="kpi"><span class="kpi-label">Accounts</span><strong>{{ staff_members|length }}</strong></div>
+  <div class="kpi"><span class="kpi-label">Active</span><strong>{{ active_count }}</strong></div>
+  <div class="kpi"><span class="kpi-label">Without a branch</span><strong>{{ unassigned_count }}</strong></div>
+</div>
+<div class="card tablewrap">
+  <table>
+    <thead><tr><th>Member</th><th>Username</th><th>Role</th><th>Branch access</th><th>Status</th></tr></thead>
+    <tbody>{% for member in staff_members %}
+      <tr><td><span class="entity"><span class="avatar">{{ member.display_name|slice:":1"|upper }}</span><strong>{{ member.display_name }}</strong></span>{% if member.pk == user.pk %} <span class="badge b-accent">You</span>{% endif %}</td>
+        <td class="mono">{{ member.username }}</td>
+        <td><span class="badge role-{{ member.role|lower }}">{{ member.get_role_display }}</span></td>
+        <td>{% for b in member.branches.all %}<span class="chip">{{ b.name }}</span> {% empty %}<span class="muted">No assigned branch</span>{% endfor %}</td>
+        <td>{% if member.is_active %}<span class="badge b-ok">Active</span>{% else %}<span class="badge b-warn">Disabled</span>{% endif %}</td></tr>
+    {% empty %}<tr><td colspan="5" class="empty">No staff yet.</td></tr>{% endfor %}</tbody>
+  </table>
+</div>
+
+<div class="modal-wrap" id="add-modal" {% if not form.errors %}hidden{% endif %}>
+  <div class="modal modal-form" role="dialog" aria-modal="true" aria-labelledby="add-title">
+    <div class="modal-head"><h2 id="add-title">Add staff member</h2><button type="button" class="btn sm" data-close aria-label="Close">&times;</button></div>
+    <form method="post" class="form">{% csrf_token %}
+      {% if form.non_field_errors %}<p class="errbox">{{ form.non_field_errors }}</p>{% endif %}
+      <div class="fields">{% for f in form %}
+        <div class="field">{{ f.label_tag }}{{ f }}{% if f.name == "password" %}<small class="muted">At least 12 characters.</small>{% endif %}{% for e in f.errors %}<small class="errbox">{{ e }}</small>{% endfor %}</div>
+      {% endfor %}</div>
+      <div class="modal-actions"><button type="button" class="btn" data-close>Cancel</button><button type="submit" class="btn primary">Create account</button></div>
+    </form>
+  </div>
+</div>
+{% include "partials/admin_modal_js.html" %}
+{% endblock %}

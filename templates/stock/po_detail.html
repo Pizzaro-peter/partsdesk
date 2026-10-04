@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+{% load ui %}
+
+{% block actions %}
+  <button type="button" class="btn" onclick="window.print()">
+    Print
+  </button>
+
+  {% if po.status == S.DRAFT %}
+    <form method="post" action="{% url 'po_status' po.pk %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="order">
+      <button type="submit" class="btn primary">
+        Mark as ordered
+      </button>
+    </form>
+  {% endif %}
+
+  {% if po.status == S.DRAFT or po.status == S.ORDERED %}
+    <form method="post"
+          action="{% url 'po_status' po.pk %}"
+          data-confirm="Cancel this purchase order?">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="cancel">
+      <button type="submit" class="btn danger">
+        Cancel order
+      </button>
+    </form>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<section class="card">
+  <dl class="facts">
+    <dt>Branch</dt>
+    <dd>{{ po.branch.name }} ({{ po.branch.code }})</dd>
+
+    <dt>Supplier</dt>
+    <dd>
+      <strong>{{ po.supplier }}</strong>
+      {% if po.supplier.phone %}
+        · {{ po.supplier.phone }}
+      {% endif %}
+    </dd>
+
+    <dt>Status</dt>
+    <dd>
+      <span class="badge {{ po.status|status_class }}">
+        {{ po.get_status_display }}
+      </span>
+    </dd>
+
+    <dt>Ordered</dt>
+    <dd>
+      {{ po.order_date|date:"j M Y" }}
+      {% if po.expected_date %}
+        · expected {{ po.expected_date|date:"j M Y" }}
+      {% endif %}
+    </dd>
+
+    {% if po.supplier_ref %}
+      <dt>Supplier ref</dt>
+      <dd>{{ po.supplier_ref }}</dd>
+    {% endif %}
+
+    {% if po.notes %}
+      <dt>Notes</dt>
+      <dd>{{ po.notes }}</dd>
+    {% endif %}
+  </dl>
+</section>
+
+{% if po.can_receive %}
+  <form method="post" action="{% url 'po_receive' po.pk %}">
+    {% csrf_token %}
+{% endif %}
+
+<section class="card">
+  <h2>Items</h2>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th class="num">Ordered</th>
+          <th class="num">Received</th>
+          <th class="num">Unit cost</th>
+          <th class="num">Line total</th>
+
+          {% if po.can_receive %}
+            <th class="num">Receive now</th>
+          {% endif %}
+
+          {% if po.status == S.DRAFT %}
+            <th>Action</th>
+          {% endif %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for l in lines %}
+          <tr>
+            <td>
+              <a href="{{ l.part.get_absolute_url }}">
+                {{ l.part.name }}
+              </a>
+              <br>
+              <small class="mono">{{ l.part.sku }}</small>
+            </td>
+
+            <td class="num">{{ l.qty_ordered|qty }}</td>
+            <td class="num">{{ l.qty_received|qty }}</td>
+            <td class="num">{% money l.unit_cost %}</td>
+            <td class="num">{% money l.line_total %}</td>
+
+            {% if po.can_receive %}
+              <td class="num">
+                <input id="recv_{{ l.id }}"
+                       type="number"
+                       step="0.01"
+                       min="0"
+                       name="recv_{{ l.id }}"
+                       value="{{ l.outstanding|qty }}"
+                       aria-label="Quantity to receive for {{ l.part.sku }}"
+                       style="width:90px">
+              </td>
+            {% endif %}
+
+            {% if po.status == S.DRAFT %}
+              <td class="num">
+                <form method="post"
+                      action="{% url 'po_del_line' po.pk l.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn sm danger">
+                    Remove
+                  </button>
+                </form>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="{% if po.can_receive or po.status == S.DRAFT %}6{% else %}5{% endif %}"
+                class="empty">
+              No items yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+
+      <tfoot>
+        <tr>
+          <td colspan="4">Total</td>
+          <td class="num">{% money po.total %}</td>
+
+          {% if po.can_receive or po.status == S.DRAFT %}
+            <td></td>
+          {% endif %}
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  {% if po.can_receive %}
+    <div class="inline" style="margin-top:12px">
+      <div class="field">
+        <label for="po-supplier-ref">
+          Supplier invoice / delivery note number
+        </label>
+
+        <input id="po-supplier-ref"
+               type="text"
+               name="supplier_ref"
+               maxlength="60"
+               placeholder="Optional">
+      </div>
+
+      <button type="submit" class="btn primary fit">
+        Receive stock
+      </button>
+    </div>
+
+    <small>
+      Receiving adds the quantities to stock and updates each
+      part's average cost.
+    </small>
+  {% endif %}
+</section>
+
+{% if po.can_receive %}
+  </form>
+{% endif %}
+
+{% if po.status == S.DRAFT %}
+<section class="card no-print">
+  <h2>Add an item</h2>
+
+  <form method="post"
+        action="{% url 'po_add_line' po.pk %}"
+        class="inline">
+    {% csrf_token %}
+
+    <div class="field" style="flex:3 1 260px">
+      <label for="po-part-search">Part</label>
+
+      <div class="picker"
+           data-picker="part"
+           data-url="{% url 'part_search_api' %}">
+
+        <input id="po-part-search"
+               type="text"
+               autocomplete="off"
+               placeholder="Search code, name or vehicle…"
+               aria-describedby="po-part-help">
+
+        {{ line_form.part }}
+
+        <ul class="picker-list" hidden></ul>
+      </div>
+
+      <small id="po-part-help">
+        Search and select a part from the results.
+      </small>
+
+      {{ line_form.part.errors }}
+    </div>
+
+    <div class="field" style="flex:1 1 140px">
+      <label for="{{ line_form.quantity.id_for_label }}">
+        Quantity
+      </label>
+
+      {{ line_form.quantity }}
+
+      <small>Number of units to order.</small>
+
+      {{ line_form.quantity.errors }}
+    </div>
+
+    <div class="field" style="flex:1 1 160px">
+      <label for="{{ line_form.unit_cost.id_for_label }}">
+        Unit cost{% if shop.currency_symbol %}
+          ({{ shop.currency_symbol }})
+        {% endif %}
+      </label>
+
+      {{ line_form.unit_cost }}
+
+      <small>
+        Cost per unit.
+
+      {{ line_form.unit_cost.errors }}
+    </div>
+
+    <button type="submit" class="btn primary fit">
+      Add item
+    </button>
+  </form>
+</section>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}{% if can_edit %}<a class="btn" href="{% url 'catalogue_upload' %}">Upload catalogue</a><a class="btn primary" href="{% url 'part_create' %}">Add part</a><a class="btn" href="{% url 'category_list' %}">Categories</a>{% endif %}<a class="btn" href="{% url 'vehicle_list' %}">Vehicles</a>{% if can_edit %}<a class="btn" href="{% url 'supplier_list' %}">Suppliers</a>{% endif %}{% endblock %}
+{% block content %}
+<form class="filters" method="get">
+  <input type="search" name="q" value="{{ g.q }}" placeholder="Search by code, name, OEM number, brand — or a vehicle: “brake pad corolla 2010”" autofocus>
+  <select name="category"><option value="">All categories</option>{% for c in categories %}<option value="{{ c.pk }}" {% if g.category == c.pk|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+  <select name="condition"><option value="">Any condition</option>{% for v, l in conditions %}<option value="{{ v }}" {% if g.condition == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  <select name="stock"><option value="">Any stock</option><option value="low" {% if g.stock == "low" %}selected{% endif %}>Low stock</option><option value="out" {% if g.stock == "out" %}selected{% endif %}>Out of stock</option></select>
+  <button class="btn">Search</button>
+</form>
+<section class="card"><div class="tablewrap"><table>
+<thead><tr><th>Code</th><th>Part</th><th>Condition</th><th>Bin</th><th class="num">In stock</th><th class="num">Price</th></tr></thead><tbody>
+{% for p in parts %}<tr>
+  <td class="mono"><a href="{{ p.get_absolute_url }}">{{ p.sku }}</a></td>
+  <td><a href="{{ p.get_absolute_url }}">{{ p.name }}</a><br><small>{{ p.brand }}{% if p.brand and p.category %} · {% endif %}{{ p.category|default:"" }}</small></td>
+  <td><span class="badge {% if p.condition != 'new' %}b-warn{% endif %}">{{ p.get_condition_display }}</span> <small>{{ p.get_part_type_display }}</small></td>
+  <td class="mono">{{ p.branch_bin }}</td>
+  <td class="num {% if p.branch_quantity <= 0 %}stockout{% elif p.branch_reorder_level > 0 and p.branch_quantity <= p.branch_reorder_level %}stocklow{% endif %}"><strong>{{ p.branch_quantity|qty }}</strong> <small>{{ p.unit }}</small></td>
+  <td class="num">{% money p.sell_price %}</td></tr>
+{% empty %}<tr><td colspan="6" class="empty">No parts found. {% if can_edit %}<a href="{% url 'part_create' %}">Add the first one</a>.{% endif %}</td></tr>{% endfor %}
+</tbody></table></div>{% include "partials/pagination.html" %}</section>
+{% endblock %}
