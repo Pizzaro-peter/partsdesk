@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div id="pos" class="pos" data-search-url="{% url 'part_search_api' %}" data-checkout-url="{% url 'pos_checkout' %}"
+     data-tax-rate="{{ cfg.tax_rate }}" data-tax-inclusive="{% if cfg.prices_include_tax %}1{% else %}0{% endif %}"
+     data-tax-name="{{ cfg.tax_name }}" data-currency="{{ cfg.currency_symbol }}"
+     data-max-discount="{{ max_discount }}" data-can-override="{{ can_override }}" data-request-id="{{ request_id }}">
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  <section>
+    <div class="card">
+      <label for="q">Find a part</label>
+      <input id="q" type="text" autocomplete="off" placeholder="Scan a barcode, or type a code, name, or vehicle — “oil filter hilux 2015”">
+      <div id="results" class="pos-results"></div>
+    </div>
+  </section>
+  <aside>
+    <div class="card ticket">
+      <h2>Current sale</h2>
+      <label>Customer (optional — leave blank for a walk-in)</label>
+      {% include "partials/picker.html" with kind="customer" url="/sales/api/customers/" field=None placeholder="Search name, phone or plate…" optional=1 %}
+      <input type="hidden" id="customer-hidden">
+      <small id="cust-note" class="muted"></small>
+      <table style="margin-top:12px">
+        <thead><tr><th>Item</th><th>Price</th><th>Qty</th><th>Disc %</th><th class="num">Total</th><th></th></tr></thead>
+        <tbody id="cart-body"></tbody>
+      </table>
+      <p id="empty-cart" class="empty">No items yet — search on the left to add parts.</p>
+      <div class="totals" style="margin-top:10px">
+        <div id="row-disc"><span>Discount</span><strong id="t-disc"></strong></div>
+        <div><span>Subtotal</span><strong id="t-gross"></strong></div>
+        <div id="row-tax"><span id="t-tax-label"></span><strong id="t-tax"></strong></div>
+        <div class="grand"><span>Total</span><strong id="t-total"></strong></div>
+      </div>
+      <div class="fields" style="margin-top:12px">
+        <div class="field"><label for="method">Payment</label>
+          <select id="method">{% for v, l in methods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select></div>
+        <div class="field"><label for="paid">Amount received</label><input id="paid" type="number" step="0.01" min="0"></div>
+      </div>
+      <p id="change" class="muted"></p>
+      <textarea id="notes" placeholder="Note on the invoice (optional)" rows="2" style="margin-top:6px"></textarea>
+      <p id="err" class="errbox"></p>
+      <button id="checkout" class="btn primary lg" style="width:100%;justify-content:center;margin-top:8px" disabled>Complete sale</button>
+    </div>
+  </aside>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/pos.js' %}"></script>{% endblock %}

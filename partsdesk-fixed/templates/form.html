@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="post" class="card form">{% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="fields">
+  {% for f in form.visible_fields %}
+    <div class="field {% if f.field.widget.input_type == 'checkbox' %}check{% endif %}">
+      <label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}
+      {% if f.help_text %}<small>{{ f.help_text }}</small>{% endif %}{{ f.errors }}
+    </div>
+  {% endfor %}
+  </div>
+  {% for h in form.hidden_fields %}{{ h }}{% endfor %}
+  <div class="btns"><button class="btn primary">{{ submit_label|default:"Save" }}</button><a class="btn" href="{{ cancel_url|default:'/' }}">Cancel</a></div>
+</form>
+{% endblock %}

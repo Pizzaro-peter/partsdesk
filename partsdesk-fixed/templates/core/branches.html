@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Business branches</h2>
+<ul>{% for branch in all_branches %}<li>{{ branch.name }} ({{ branch.code }}){% if not branch.is_active %} — inactive{% endif %}</li>{% endfor %}</ul>
+<h2>Add branch</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Add branch</button></form>
+{% endblock %}

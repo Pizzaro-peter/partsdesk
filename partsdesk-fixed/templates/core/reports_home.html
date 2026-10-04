@@ -1,0 +1,2 @@
+{% extends "base.html" %}
+{% block content %}<div class="reportcards">{% for title, url, blurb in cards %}<a href="{% url url %}"><strong>{{ title }}</strong><span class="muted">{{ blurb }}</span></a>{% endfor %}</div>{% endblock %}

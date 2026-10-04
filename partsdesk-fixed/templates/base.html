@@ -1,0 +1,33 @@
+{% load static ui %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ page_title|default:"PartsDesk" }}{% endblock %} · {{ shop.shop_name }}</title>
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body data-print-log-url="{% url 'log_print_request' %}" {% if auto_print %}data-autoprint="1"{% endif %}>
+<div class="app">
+  <aside class="side no-print">
+    <div class="brand"><span class="brand-mark">PD</span><div><strong>PartsDesk</strong><small>{{ shop.shop_name }}</small></div></div>
+    <nav>{% for item in nav %}<a href="{{ item.url }}" class="{% if item.active %}on{% endif %}">{{ item.label }}</a>{% endfor %}</nav>
+    <div class="who">
+      {% if branches %}<form method="post" action="{% url 'switch_branch' %}">{% csrf_token %}
+      <label for="branch-select">Branch</label><select id="branch-select" name="branch_id" onchange="this.form.submit()">
+      {% for b in branches %}<option value="{{ b.pk }}" {% if b.pk == active_branch.pk %}selected{% endif %}>{{ b.name }}</option>{% endfor %}
+      </select><button type="submit">Switch</button></form>{% endif %}
+      <strong>{{ user.display_name }}</strong><small>{{ user.get_role_display }}</small><br>
+      <a href="{% url 'password_change' %}">Change password</a> ·
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out</button></form>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="top"><h1>{% block page_heading %}{{ page_title }}{% endblock %}</h1><div class="actions">{% page_back_link as back %}{% if back %}<a class="btn no-print" href="{{ back.url }}" aria-label="{{ back.label }}">&larr; {{ back.label }}</a>{% endif %}{% block actions %}{% endblock %}</div></header>
+    {% if messages %}<ul class="messages no-print">{% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}</ul>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+<script src="{% static 'js/app.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

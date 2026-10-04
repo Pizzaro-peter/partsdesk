@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}<form method="post" class="card form">{% csrf_token %}
+<p class="muted">Use this after a physical count, or to write off damaged or lost stock. Enter what is actually on the shelf; the difference is recorded in the stock ledger with your name.</p>
+<div class="fields">
+  <div class="field"><label>Part</label>{% include "partials/picker.html" with kind="part" url="/catalog/api/search/" field=form.part placeholder="Search code, name or vehicle…" initial_label=part %}{{ form.part.errors }}</div>
+  <div class="field"><label for="id_counted">Counted quantity</label>{{ form.counted }}{{ form.counted.errors }}</div>
+  <div class="field"><label for="id_reason">Reason</label>{{ form.reason }}</div>
+  <div class="field"><label for="id_note">Note (optional)</label>{{ form.note }}</div>
+</div>
+<div class="btns"><button class="btn primary">Save adjustment</button><a class="btn" href="{% url 'movement_list' %}">Cancel</a></div></form>{% endblock %}

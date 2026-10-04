@@ -1,0 +1,20 @@
+[
+  {
+    "test": "JS_POS_01_retail_total",
+    "result": "Pass",
+    "expected": "K100.00",
+    "actual": "K100.00"
+  },
+  {
+    "test": "JS_POS_02_trade_total",
+    "result": "Pass",
+    "expected": "K90.00",
+    "actual": "K90.00"
+  },
+  {
+    "test": "JS_POS_03_clear_trade_customer_restores_retail",
+    "result": "Pass",
+    "expected": "K100.00",
+    "actual": "K100.00"
+  }
+]

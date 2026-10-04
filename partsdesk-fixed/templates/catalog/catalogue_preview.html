@@ -1,0 +1,26 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn" href="{% url 'catalogue_upload' %}">Upload another file</a>{% endblock %}
+{% block content %}
+<section class="card">
+  <h2>{{ shop.shop_name }} · {{ batch.branch.name }} ({{ batch.branch.code }})</h2>
+  <p><strong>{{ batch.file_name }}</strong> · {{ row_count }} rows · {{ batch.get_mode_display }} · {{ batch.get_status_display }}</p>
+  {% if batch.status == 'imported' %}
+    <p><strong>Import completed.</strong> {{ batch.result.created }} added, {{ batch.result.updated }} updated, {{ batch.result.openings }} branch openings. {{ batch.result.ignored_openings }} opening quantities skipped.</p>
+    <a href="{% url 'part_list' %}" class="btn primary">View parts</a>
+  {% else %}
+    <p>{{ summary.created }} new parts · {{ summary.updated }} updates · {{ summary.openings }} opening stock entries.</p>
+    {% if summary.ignored_openings %}<p class="stocklow">{{ summary.ignored_openings }} opening quantities will be skipped because stock or movement history already exists in this branch.</p>{% endif %}
+    <p>Catalogue price and description changes affect all branches in this business. Stock and shelf settings affect only {{ batch.branch.name }}.</p>
+    {% if can_import %}<div class="btns">
+      <form method="post" action="{% url 'catalogue_confirm' batch.pk %}">{% csrf_token %}<button class="btn primary" type="submit">Confirm import of {{ row_count }} rows</button></form>
+      <form method="post" action="{% url 'catalogue_cancel' batch.pk %}">{% csrf_token %}<button class="btn" type="submit">Cancel upload</button></form>
+    </div>{% elif expired %}<p>This preview has expired. Upload the file again to continue.</p>{% endif %}
+  {% endif %}
+</section>
+<section class="card"><h2>File preview{% if row_count > 100 %} — first 100 of {{ row_count }} rows{% endif %}</h2>
+  <p>All {{ row_count }} rows have been validated. Current data is checked again when you confirm.</p>
+  <div class="tablewrap"><table><thead><tr><th>Excel row</th><th>Action</th><th>SKU</th><th>Part</th><th class="num">Retail price</th><th class="num">Opening qty</th><th>Stock note</th></tr></thead><tbody>
+    {% for row in rows %}<tr><td>{{ row.row_number }}</td><td>{{ row.action }}</td><td class="mono">{{ row.sku }}</td><td>{{ row.name }}</td><td class="num">{% money row.price %}</td><td class="num">{{ row.opening }}</td><td>{% if row.ignored_opening %}Opening quantity skipped{% else %}New opening only if no stock history{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

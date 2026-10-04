@@ -1,0 +1,334 @@
+{% extends "base.html" %}
+{% load ui %}
+
+{% block actions %}
+  {% if not job.is_locked %}
+    {% if can_invoice %}
+      <button
+        type="button"
+        class="btn primary"
+        onclick="document.getElementById('inv').showModal()"
+      >
+        Invoice job
+      </button>
+    <form
+      method="post"
+      action="{% url 'job_cancel' job.pk %}"
+      data-confirm="Cancel this job card? Any issued parts will be returned to stock."
+    >
+      {% csrf_token %}
+      <button type="submit" class="btn danger">Cancel job</button>
+    </form>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="grid2">
+    <section class="card">
+      <h2>{{ job.vehicle.reg_number }} — {{ job.customer.name }}</h2>
+
+      <p class="muted">
+        {{ job.vehicle.make }}
+        {{ job.vehicle.model }}
+        {{ job.vehicle.year|default:"" }}
+
+        {% if job.vehicle.engine %}
+          · {{ job.vehicle.engine }}
+        {% endif %}
+
+        {% if job.odometer %}
+          · {{ job.odometer }} km
+        {% endif %}
+      </p>
+
+      {% if job.is_locked %}
+        <p>
+          <strong>Complaint:</strong>
+          {{ job.complaint|linebreaksbr }}
+        </p>
+
+        {% if job.diagnosis %}
+          <p>
+            <strong>Diagnosis:</strong>
+            {{ job.diagnosis|linebreaksbr }}
+          </p>
+        {% endif %}
+
+        <p>
+          <span class="badge {{ job.status|status_class }}">
+            {{ job.get_status_display }}
+          </span>
+
+          {% if job.invoice %}
+            ·
+            <a href="{{ job.invoice.get_absolute_url }}">
+              Invoice {{ job.invoice.number }}
+            </a>
+          {% endif %}
+        </p>
+      {% else %}
+        <form method="post" class="stack">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+
+          <div class="fields">
+            <div class="field">
+              <label for="id_status">Status</label>
+              {{ form.status }}
+              {{ form.status.errors }}
+            </div>
+
+            <div class="field">
+              <label for="id_assigned_to">Mechanic</label>
+              {{ form.assigned_to }}
+              {{ form.assigned_to.errors }}
+            </div>
+
+            <div class="field">
+              <label for="id_promised_date">Promised date</label>
+              {{ form.promised_date }}
+              {{ form.promised_date.errors }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="id_complaint">Complaint</label>
+            {{ form.complaint }}
+            {{ form.complaint.errors }}
+          </div>
+
+          <div class="field">
+            <label for="id_diagnosis">Diagnosis / work notes</label>
+            {{ form.diagnosis }}
+            {{ form.diagnosis.errors }}
+          </div>
+
+          <div class="btns">
+            <button type="submit" class="btn primary">Save</button>
+          </div>
+        </form>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <h2>Job total</h2>
+
+      <div class="sum">
+        <div>
+          <span>Parts</span>
+          <span>{% money job.parts_total %}</span>
+        </div>
+
+        <div>
+          <span>Labour</span>
+          <span>{% money job.labour_total %}</span>
+        </div>
+
+        <div class="total">
+          <span>Total</span>
+          <span>{% money job.total %}</span>
+        </div>
+      </div>
+
+      <p class="muted" style="margin-top:10px">
+        Parts are deducted from stock as soon as they're added below,
+        so the shelf count stays accurate while the vehicle is in the bay.
+      </p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Parts used</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Part</th>
+          <th class="num">Qty</th>
+          <th class="num">Price</th>
+          <th class="num">Total</th>
+
+          {% if not job.is_locked %}
+            <th></th>
+          {% endif %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for p in parts %}
+          <tr>
+            <td>
+              {{ p.part.name }}
+              <br>
+              <small class="mono">{{ p.part.sku }}</small>
+            </td>
+
+            <td class="num">{{ p.quantity|qty }}</td>
+            <td class="num">{% money p.unit_price %}</td>
+            <td class="num">{% money p.line_total %}</td>
+
+            {% if not job.is_locked %}
+              <td class="num">
+                <form
+                  method="post"
+                  action="{% url 'job_remove_part' job.pk p.pk %}"
+                  style="display:inline"
+                >
+                  {% csrf_token %}
+                  <button type="submit" class="btn sm danger">
+                    Remove
+                  </button>
+                </form>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td
+              colspan="{% if job.is_locked %}4{% else %}5{% endif %}"
+              class="empty"
+            >
+              No parts added yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if not job.is_locked %}
+      <form
+        method="post"
+        action="{% url 'job_add_part' job.pk %}"
+        class="inline"
+        style="margin-top:12px"
+      >
+        {% csrf_token %}
+
+        <div style="flex:3 1 260px">
+          {% include "partials/picker.html" with kind="part" url="/catalog/api/search/" field=part_form.part placeholder="Search code, name or vehicle…" %}
+        </div>
+
+        {{ part_form.quantity }}
+
+        <button type="submit" class="btn primary fit">
+          Add part
+        </button>
+      </form>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>Labour</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th class="num">Hours</th>
+          <th class="num">Rate</th>
+          <th class="num">Amount</th>
+
+          {% if not job.is_locked %}
+            <th></th>
+          {% endif %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for l in labour %}
+          <tr>
+            <td>{{ l.description }}</td>
+            <td class="num">{{ l.hours|qty }}</td>
+            <td class="num">{% money l.rate %}</td>
+            <td class="num">{% money l.amount %}</td>
+
+            {% if not job.is_locked %}
+              <td class="num">
+                <form
+                  method="post"
+                  action="{% url 'job_remove_labour' job.pk l.pk %}"
+                  style="display:inline"
+                >
+                  {% csrf_token %}
+                  <button type="submit" class="btn sm danger">
+                    Remove
+                  </button>
+                </form>
+              </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td
+              colspan="{% if job.is_locked %}4{% else %}5{% endif %}"
+              class="empty"
+            >
+              No labour lines yet.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if not job.is_locked %}
+      <form
+        method="post"
+        action="{% url 'job_add_labour' job.pk %}"
+        class="inline"
+        style="margin-top:12px"
+      >
+        {% csrf_token %}
+
+        {{ labour_form.description }}
+        {{ labour_form.hours }}
+        {{ labour_form.rate }}
+
+        <button type="submit" class="btn primary fit">
+          Add labour
+        </button>
+      </form>
+    {% endif %}
+  </section>
+
+  {% if can_invoice and not job.is_locked %}
+    <dialog
+      id="inv"
+      class="card"
+      style="border:1px solid var(--line);border-radius:8px;max-width:380px"
+    >
+      <form method="post" action="{% url 'job_invoice' job.pk %}">
+        {% csrf_token %}
+
+        <h2>Invoice this job</h2>
+
+        <div class="fields">
+          <div class="field">
+            <label for="id_payment_method">Payment</label>
+            {{ invoice_form.payment_method }}
+          </div>
+
+          <div class="field">
+            <label for="id_amount_paid">Amount received</label>
+            {{ invoice_form.amount_paid }}
+            <small>{{ invoice_form.amount_paid.help_text }}</small>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button type="submit" class="btn primary">
+            Create invoice
+          </button>
+
+          <button
+            type="button"
+            class="btn"
+            onclick="document.getElementById('inv').close()"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </dialog>
+  {% endif %}
+{% endblock %}

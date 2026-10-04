@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn primary" href="{% url 'pos' %}">New sale</a>{% endblock %}
+{% block content %}
+<form class="filters" method="get"><input type="search" name="q" value="{{ g.q }}" placeholder="Search invoice number or customer">
+  <label style="display:flex;align-items:center;gap:6px;font-weight:400"><input type="checkbox" name="due" value="1" {% if g.due %}checked{% endif %} onchange="this.form.submit()"> Only unpaid</label>
+  <button class="btn">Search</button></form>
+<section class="card"><div class="tablewrap"><table><thead><tr><th>Invoice</th><th>Customer</th><th>When</th><th>By</th><th class="num">Total</th><th class="num">Balance</th><th>Status</th></tr></thead><tbody>
+{% for s in sales %}<tr><td><a href="{{ s.get_absolute_url }}">{{ s.number }}</a></td><td>{{ s.customer.name|default:"Walk-in" }}</td><td>{{ s.created_at|date:"j M Y, H:i" }}</td><td>{{ s.created_by.display_name|default:"—" }}</td>
+<td class="num">{% money s.total %}</td><td class="num {% if s.balance_due > 0 %}stockout{% endif %}">{% money s.balance_due %}</td><td><span class="badge {{ s.status|status_class }}">{{ s.get_status_display }}</span></td></tr>
+{% empty %}<tr><td colspan="7" class="empty">No invoices found.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</section>{% endblock %}

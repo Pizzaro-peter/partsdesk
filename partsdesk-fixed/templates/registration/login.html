@@ -1,0 +1,11 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · PartsDesk</title><link rel="stylesheet" href="{% static 'css/app.css' %}"></head>
+<body><div class="login"><form method="post" class="card form stack">{% csrf_token %}
+  <div class="brand" style="border:0;padding:0"><span class="brand-mark">PD</span><div><strong style="color:var(--ink)">PartsDesk</strong><small>Sign in to continue</small></div></div>
+  {% if form.errors %}<ul class="errorlist"><li>That username and password don't match. Try again.</li></ul>{% endif %}
+  <div class="field"><label for="id_username">Username</label>{{ form.username }}</div>
+  <div class="field"><label for="id_password">Password</label>{{ form.password }}</div>
+  <input type="hidden" name="next" value="{{ next }}">
+  <button class="btn primary lg" style="width:100%;justify-content:center">Sign in</button>
+</form></div></body></html>

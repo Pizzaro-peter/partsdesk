@@ -1,0 +1,1282 @@
+{
+  "django": "6.1.1",
+  "python": "3.14.2 (tags/v3.14.2:df79316, Dec  5 2025, 17:18:21) [MSC v.1944 64 bit (AMD64)]",
+  "results": [
+    {
+      "test": "core.tests.TenantIsolationTests.test_branch_sale_does_not_change_other_branch_stock_or_reports",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_catalog_and_stock_are_separate",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_cross_business_customer_and_part_rejected_at_checkout",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_new_branch_starts_with_independent_zero_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_new_catalog_part_is_shared_with_separate_branch_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_other_business_order_and_job_urls_are_not_accessible",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_owner_can_switch_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_receipt_changes_only_destination_branch_cost_and_quantity",
+      "result": "Pass"
+    },
+    {
+      "test": "core.tests.TenantIsolationTests.test_unassigned_branch_cannot_be_selected_or_used",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ADMIN_01_branch_staff_creation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ADMIN_02_staff_foreign_branch_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ADMIN_03_tax_and_discount_ranges",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ADMIN_04_create_tenant_command",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ADMIN_05_seed_command_prefix_and_isolation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_01_login_logout",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_02_inactive_tenant_denied",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_03_no_branches_denied",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_04_revoked_selected_branch_falls_back_safely",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_05_non_owner_is_not_platform_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_AUTH_06_password_change_workflow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_DATA_01_duplicate_sku_and_barcode_validation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_DATA_02_negative_prices_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_DATA_03_fitment_and_reference_search",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_DATA_04_inactive_part_checkout_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_DATA_05_script_text_escaped",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_E2E_A_purchase_sale_return",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_E2E_B_customer_job_invoice_via_http",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_job_cancel",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_job_invoice",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_po_from_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_po_receive",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_po_status",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_pos_checkout",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_HTTP_GET_switch_branch",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_IMPORT_01_new_part_opening_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_IMPORT_02_existing_sku_no_stock_duplication",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_IMPORT_03_existing_sku_destination_branch_opening",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_IMPORT_04_bad_row_rolls_back_file",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_IMPORT_05_negative_values_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_array",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_invalid_part_id",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_line_null",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_lines_null",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_malformed_json",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_negative_quantity",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_nonfinite_price",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_nonfinite_quantity",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_null",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_query_job_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_query_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_query_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_query_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_string",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_too_many_decimal_places",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_INPUT_zero_quantity",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_01_cross_tenant_search",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_02_branch_switch_restrictions",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_03_owner_switch_and_branch_quantity",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_04_reject_foreign_checkout",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_05_foreign_service_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_06_foreign_forms_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_07_shared_customer_branch_transactions_hidden",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_08_cost_api_restricted",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_09_branch_sequences_independent",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_10_stale_form_after_branch_switch_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_customer_detail",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_customer_edit",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_job_detail",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_part_detail",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_part_edit",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ISO_foreign_url_po_detail",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_01_parts_labour_invoice_no_double_deduction",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_02_csrf_removal_forms",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_03_csrf_missing_token_denied",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_04_cancel_once_only",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_05_bad_invoice_keeps_issued_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_06_empty_invoice_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_07_remove_same_stale_line_not_twice",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_08_mechanic_cancel_button_hidden",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_JOB_09_validation_error_visible",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REPORT_CSV_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REP_01_branch_reports_and_return_reconciliation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REP_02_receivables_branch_scoped",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REP_03_csv_formula_text_safe",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REP_04_ledger_reconciles",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_REP_05_storekeeper_dashboard_hides_customer_job_data",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_audit_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_customer_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_job_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_part_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_part_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_po_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_pos",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_reports_home",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_sale_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_shop_settings",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_supplier_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_counter_vehicle_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_audit_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_customer_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_job_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_part_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_part_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_po_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_pos",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_reports_home",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_sale_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_shop_settings",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_supplier_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_manager_vehicle_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_audit_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_customer_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_job_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_part_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_part_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_po_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_pos",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_reports_home",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_sale_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_shop_settings",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_supplier_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_mechanic_vehicle_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_audit_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_customer_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_job_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_part_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_part_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_po_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_pos",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_reports_home",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_sale_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_shop_settings",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_supplier_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_owner_vehicle_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_audit_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_branches",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_customer_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_job_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_movement_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_part_create",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_part_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_po_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_pos",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_low_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_receivables",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_slow",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_stock_value",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_report_top",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_reports_home",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_sale_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_shop_settings",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_staff",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_stock_adjust",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_supplier_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_ROLE_storekeeper_vehicle_list",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_01_cash_and_trade_prices",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_02_counter_cannot_override_price",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_03_counter_discount_boundary",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_04_credit_limits_shared",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_05_payment_and_overpayment_guards",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_06_credit_failure_rolls_back",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_07_tax_inclusive_exclusive",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_08_historical_price_snapshot",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_09_returns_and_repeated_return_guard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_10_no_restock_return",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_11_duplicate_checkout_replay",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_12_counter_cannot_pay_invisible_other_invoice",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_SALE_13_invoice_subtotal_preserves_cents",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_01_count_adjustments",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_02_insufficient_stock_atomic",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_03_multiline_failure_rolls_back_all",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_04_partial_receipt_average_cost",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_05_order_status_guards",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_06_draft_only_line_edits",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_07_replenishment_draft_and_open_order_skip",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_08_detail_shows_branch_cost",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_09_po_defaults_to_branch_cost",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_regression.AcceptanceTests.test_STOCK_10_draft_remove_button_has_form",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_01_checkout_requires_request_identity",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_02_invalid_request_identity_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_03_replay_returns_same_invoice_and_deducts_once",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_04_replay_is_persistent_across_sessions",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_05_replay_uses_historical_invoice_after_catalogue_changes",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_06_changed_ticket_cannot_reuse_committed_request",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_07_new_keys_allow_two_identical_legitimate_sales",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_08_failed_checkout_rolls_back_request_and_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_09_request_scope_is_branch_specific",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_10_request_scope_is_user_specific",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_11_null_notes_fail_cleanly",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_12_nonfinite_payment_fails_cleanly",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_13_excess_payment_precision_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_14_excess_ticket_total_rejected_before_writes",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_15_large_decimal_exponent_fails_cleanly",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_16_service_rejects_nonfinite_price",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_17_stock_service_rejects_fractional_precision",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_18_negative_job_quantity_cannot_increase_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_19_payment_service_enforces_counter_ownership",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_20_counter_can_pay_own_invoice",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_21_csv_escapes_text_formulas_and_preserves_numbers",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_22_existing_sku_branch_opening_is_applied_only_once",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_23_import_cannot_reopen_depleted_stock",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_24_nonfinite_import_rolls_back_entire_file",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_25_branch_margin_uses_branch_cost",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_fixes.FixRegressionTests.test_FIX_26_po_remove_form_passes_real_csrf_validation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_add_only_existing_sku_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_choices_and_boolean_validation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_company_name_and_tenant_owned_related_records",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_confirm_creates_catalogue_fitment_branch_opening_and_audit",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_decimal_validation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_duplicate_sku_and_barcode_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_expiry_and_cancel",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_extension_corruption_and_size_limits",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_fitment_validation_and_preservation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_formulas_and_errors_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_headers_empty_and_unheaded_cells",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_invalid_row_blocks_entire_file",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_macros_external_links_xml_coordinates_merges_entities",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_maximum_rows_and_unpacked_size_limit",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_mid_import_failure_rolls_back_all_rows",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_numeric_identifiers_rejected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_opening_once_and_depleted_stock_not_reopened",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_other_tenant_barcode_no_conflict",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_post_only_and_csrf",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_preview_no_catalogue_side_effects",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_replay_idempotent",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_required_fields_and_zero_price",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_revalidation_after_preview",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_role_permissions",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_template_download",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_tenant_branch_uploader_isolation",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_update_preserves_blank_values_stock_and_average_cost",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_excel.ExcelCatalogueTests.test_upload_form_required_file_valid_mode",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_customer_and_catalogue_vehicle_parents",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_dashboard_and_anonymous_no_back_link",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_direct_pages_show_one_get_link_outside_forms",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_fallback_ignores_referrer_and_query",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_invoice_return_and_catalogue_preview_destinations",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_named_parent_map",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_navigation.NavigationTests.test_primary_sections_return_to_dashboard",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_adjustment_before_after_and_reason",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_append_only_queryset_instance_and_bulk_update",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_audit_write_failure_rolls_back_model_save",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_auto_print_and_report_export_logged",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_branch_switch_and_permission_memberships",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_business_rollback_removes_events",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_csrf_and_foreign_print_access_denied",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_denied_role_and_cross_tenant_access_logged_to_actor_tenant",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_description_only_change_recorded_without_contents",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_excel_upload_rows_not_copied_to_audit",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_failed_checkout_no_success_events_and_failure_request",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_failed_login_known_account_visible_only_to_its_tenant",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_filters_and_exports_respect_branch_assignments",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_invalid_form_and_login_while_signed_in",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_known_login_failure_can_be_filtered_by_user",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_login_logout_request_metadata",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_password_change_no_password_hash_or_values",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_print_requests_verified_and_csrf_protected",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_purchase_and_workshop_labour_changes",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_relationship_add_remove_clear",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_request_actor_does_not_leak_between_sessions",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_request_filters_exports_and_formula_escape",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_request_gets_are_separate_and_do_not_log_query_or_cookies",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_reverse_relationship_clear",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_sale_payment_discount_and_correct_service_actor",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_staff_creation_never_records_password",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_unknown_login_has_no_tenant_and_no_raw_credentials",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_user_role_branch_and_settings_changes_logged",
+      "result": "Pass"
+    },
+    {
+      "test": "uat_audit.AuditTests.test_zambia_date_boundary_and_invalid_dates",
+      "result": "Pass"
+    }
+  ]
+}

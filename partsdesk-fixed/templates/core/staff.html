@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Staff accounts</h2>
+<ul>{% for member in staff_members %}<li>{{ member.username }} — {{ member.get_role_display }}:
+  {% for b in member.branches.all %}{{ b.name }}{% if not forloop.last %}, {% endif %}{% empty %}No assigned branch{% endfor %}</li>{% endfor %}</ul>
+<h2>Add staff member</h2><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Create account</button></form>
+{% endblock %}

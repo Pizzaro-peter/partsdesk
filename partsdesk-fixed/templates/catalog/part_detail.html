@@ -1,0 +1,41 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}{% if can_edit %}<a class="btn" href="{% url 'stock_adjust' %}?part={{ part.pk }}">Adjust stock</a><a class="btn primary" href="{% url 'part_edit' part.pk %}">Edit</a>{% endif %}{% endblock %}
+{% block content %}
+<div class="grid2">
+<section class="card"><h2>Details</h2><dl class="facts">
+  <dt>Code</dt><dd class="mono">{{ part.sku }}</dd>
+  {% if part.barcode %}<dt>Barcode</dt><dd class="mono">{{ part.barcode }}</dd>{% endif %}
+  <dt>Type</dt><dd>{{ part.get_part_type_display }} · <span class="badge {% if part.condition != 'new' %}b-warn{% endif %}">{{ part.get_condition_display }}</span></dd>
+  <dt>Brand</dt><dd>{{ part.brand|default:"—" }}</dd><dt>Category</dt><dd>{{ part.category|default:"—" }}</dd>
+  <dt>OEM number</dt><dd class="mono">{{ part.oem_number|default:"—" }}</dd><dt>Bin</dt><dd class="mono">{{ stock.bin_location|default:"—" }}</dd>
+  {% if part.description %}<dt>Notes</dt><dd>{{ part.description|linebreaksbr }}</dd>{% endif %}
+  {% if not part.is_active %}<dt>Status</dt><dd><span class="badge b-bad">Inactive</span></dd>{% endif %}
+</dl></section>
+<section class="card"><h2>Stock &amp; price</h2><dl class="facts">
+  <dt>In stock</dt><dd><strong class="{% if stock.is_out %}stockout{% elif stock.is_low %}stocklow{% endif %}">{{ stock.quantity_on_hand|qty }} {{ part.unit }}</strong>{% if stock.is_out %} <span class="badge b-bad">Out of stock</span>{% elif stock.is_low %} <span class="badge b-warn">Low</span>{% endif %}</dd>
+  <dt>Reorder at</dt><dd>{{ stock.reorder_level|qty }}{% if part.preferred_supplier %} · {{ part.preferred_supplier }}{% endif %}</dd>
+  <dt>Retail price</dt><dd>{% money part.sell_price %}</dd>
+  {% if part.trade_price %}<dt>Trade price</dt><dd>{% money part.trade_price %}</dd>{% endif %}
+  {% if user.can_see_costs %}<dt>Cost</dt><dd>{% money stock.cost_price %}{% if margin_pct is not None %} <small>(margin {{ margin_pct|floatformat:0 }}%)</small>{% endif %}</dd>{% endif %}
+</dl></section>
+</div>
+<div class="grid2">
+<section class="card"><h2>Fits these vehicles</h2>
+  {% if part.is_universal %}<p><span class="badge b-info">Universal</span> fits any vehicle.</p>{% endif %}
+  {% for v in fits %}<p style="margin:4px 0">{{ v }}{% if can_edit %} <form method="post" action="{% url 'part_fitment_remove' part.pk v.pk %}" style="display:inline">{% csrf_token %}<button class="btn sm danger">Remove</button></form>{% endif %}</p>
+  {% empty %}{% if not part.is_universal %}<p class="muted">No vehicles linked yet.</p>{% endif %}{% endfor %}
+  {% if can_edit %}<form method="post" action="{% url 'part_fitment_add' part.pk %}" class="inline" style="margin-top:10px">{% csrf_token %}{{ fit_form.vehicle }}<button class="btn fit">Add</button></form>
+  <small><a href="{% url 'vehicle_create' %}">Vehicle not listed? Add it</a></small>{% endif %}</section>
+<section class="card"><h2>Other part numbers</h2>
+  {% for x in cross_refs %}<p style="margin:4px 0"><span class="mono">{{ x.number }}</span> <span class="badge">{{ x.get_kind_display }}</span> <small>{{ x.note }}</small>
+    {% if can_edit %}<form method="post" action="{% url 'part_xref_remove' part.pk x.pk %}" style="display:inline">{% csrf_token %}<button class="btn sm danger">Remove</button></form>{% endif %}</p>
+  {% empty %}<p class="muted">No cross-references. Add OEM, interchangeable and superseded numbers so customers find this part whichever number they quote.</p>{% endfor %}
+  {% if can_edit %}<form method="post" action="{% url 'part_xref_add' part.pk %}" class="inline" style="margin-top:10px">{% csrf_token %}{{ xref_form.number }}{{ xref_form.kind }}{{ xref_form.note }}<button class="btn fit">Add</button></form>{% endif %}</section>
+</div>
+{% if can_edit %}<section class="card"><h2>Recent stock movements</h2>
+  <div class="tablewrap"><table><thead><tr><th>When</th><th>What</th><th>Reference</th><th class="num">Change</th><th class="num">Balance</th><th>By</th></tr></thead><tbody>
+  {% for m in movements %}<tr><td>{{ m.created_at|date:"j M, H:i" }}</td><td>{{ m.get_reason_display }}<br><small>{{ m.note }}</small></td><td class="mono">{{ m.reference }}</td>
+    <td class="num {% if m.quantity < 0 %}stockout{% else %}stockok{% endif %}">{% if m.quantity > 0 %}+{% endif %}{{ m.quantity|qty }}</td><td class="num">{{ m.quantity_after|qty }}</td><td>{{ m.user.display_name|default:"—" }}</td></tr>
+  {% empty %}<tr><td colspan="6" class="empty">No movements yet.</td></tr>{% endfor %}</tbody></table></div>
+  <p style="margin:10px 0 0"><a href="{% url 'movement_list' %}?part={{ part.pk }}">Full history</a></p></section>{% endif %}
+{% endblock %}
