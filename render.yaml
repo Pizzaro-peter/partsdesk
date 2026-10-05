@@ -15,7 +15,7 @@ services:
       - key: PARTSDESK_SECRET_KEY
         generateValue: true
       - key: PARTSDESK_TRUST_PROXY_SSL_HEADER
-        value: "1"
+        value: "0"
       - key: PARTSDESK_TZ
         value: Africa/Lusaka
       - key: PGHOST
