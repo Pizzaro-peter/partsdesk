@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: pip install -r requirements-lock.txt && python manage.py collectstatic --noinput
-    startCommand: python manage.py migrate --noinput && waitress-serve --listen=0.0.0.0:$PORT config.wsgi:application
+    startCommand: python manage.py migrate --noinput && waitress-serve --url-scheme=https --listen=0.0.0.0:$PORT config.wsgi:application
     envVars:
       - key: PYTHON_VERSION
         value: 3.14.2

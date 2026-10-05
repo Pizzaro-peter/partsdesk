@@ -52,7 +52,7 @@ python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 ```
 
-Run `waitress-serve --listen=127.0.0.1:8000 config.wsgi:application` behind a local TLS-terminating reverse proxy, or use the WSGI server and bind address required by the hosting platform. Configure the proxy’s TLS and trusted-origin settings for that host. Back up PostgreSQL and test restoration regularly. Configure external uptime/error monitoring and alerting, and document the on-call owner and recovery procedure; these depend on the hosting provider and are not provisioned by the application.
+Run `waitress-serve --listen=127.0.0.1:8000 config.wsgi:application` behind a local TLS-terminating reverse proxy, or use the WSGI server and bind address required by the hosting platform. When TLS is terminated before Waitress and every inbound request is HTTPS, set Waitress `--url-scheme=https`; alternatively, pass trusted proxy headers and configure Waitress's trusted proxy addresses. Configure Django's proxy and trusted-origin settings only for the actual trusted hosting setup. Back up PostgreSQL and test restoration regularly. Configure external uptime/error monitoring and alerting, and document the on-call owner and recovery procedure; these depend on the hosting provider and are not provisioned by the application.
 
 Keep local SQLite database files, secrets, virtual environments, collected static files, and generated test reports out of Git. `.gitignore` prevents new untracked artifacts from being added, but does not untrack files already committed. Do not deploy demo users or their passwords.
 
