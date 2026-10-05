@@ -1,0 +1,19 @@
+# Resolved and tested with Python 3.14.2 on 2026-10-04.
+asgiref==3.12.1
+colorama==0.4.6
+defusedxml==0.7.1
+Django==6.1.1
+django-axes==8.3.1
+django-formtools==2.7
+django-otp==1.7.3
+django-phonenumber-field==8.5.0
+django-two-factor-auth==1.18.1
+et_xmlfile==2.0.0
+openpyxl==3.1.5
+psycopg==3.3.6
+psycopg-binary==3.3.6
+qrcode==8.2
+sqlparse==0.6.0
+tzdata==2026.5
+waitress==3.0.2
+whitenoise==6.12.0

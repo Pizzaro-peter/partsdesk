@@ -1,0 +1,6 @@
+{# usage: {% include "partials/picker.html" with kind="part" url=... field=form.part placeholder="..." initial=part %} #}
+<div class="picker" data-picker="{{ kind }}" data-url="{{ url }}" {% if vehicle_select %}data-vehicle-select="{{ vehicle_select }}"{% endif %} {% if optional %}data-required="0"{% endif %}>
+  <input type="text" autocomplete="off" placeholder="{{ placeholder }}" value="{{ initial_label|default:'' }}">
+  {{ field }}
+  <ul class="picker-list" hidden></ul>
+</div>

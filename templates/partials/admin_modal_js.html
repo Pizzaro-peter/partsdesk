@@ -1,0 +1,9 @@
+<script>
+(function () {
+  var m = document.getElementById("add-modal"); if (!m) return;
+  document.querySelectorAll("[data-open]").forEach(function (b) { b.addEventListener("click", function () { m.hidden = false; var f = m.querySelector("input,select"); if (f) f.focus(); }); });
+  m.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", function () { m.hidden = true; }); });
+  m.addEventListener("click", function (e) { if (e.target === m) m.hidden = true; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") m.hidden = true; });
+})();
+</script>

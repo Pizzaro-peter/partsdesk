@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block page_heading %}Staff account{% endblock %}
+{% block actions %}<a class="btn" href="{% url 'staff' %}">&larr; Staff &amp; access</a>{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="admin-bar">
+    <div>
+      <h2>{{ member.display_name }}</h2>
+      <p class="muted">{{ member.username }} · {% if member.is_active %}Active account{% else %}Disabled account{% endif %}</p>
+    </div>
+    <span class="badge role-{{ member.role|lower }}">{{ member.get_role_display }}</span>
+  </div>
+  <h3>Profile and access</h3>
+  <form method="post" class="form stack">
+    {% csrf_token %}<input type="hidden" name="action" value="update">
+    {% if update_form.non_field_errors %}<p class="errbox">{{ update_form.non_field_errors }}</p>{% endif %}
+    <div class="fields">
+      {% for field in update_form %}
+      <div class="field">
+        {{ field.label_tag }}{{ field }}
+        {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}<small class="errbox">{{ error }}</small>{% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="btns"><button type="submit" class="btn primary">Save user details</button></div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Password reset</h2>
+  <p class="muted">Set a temporary password and share it with the user securely. They can change it after signing in from their profile. Passwords are never shown or recorded in the audit log.</p>
+  <form method="post" class="form stack">
+    {% csrf_token %}<input type="hidden" name="action" value="reset_password">
+    {% if password_form.non_field_errors %}<p class="errbox">{{ password_form.non_field_errors }}</p>{% endif %}
+    <div class="fields">
+      {% for field in password_form %}
+      <div class="field">
+        {{ field.label_tag }}{{ field }}
+        {% for error in field.errors %}<small class="errbox">{{ error }}</small>{% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="btns"><button type="submit" class="btn">Set temporary password</button></div>
+  </form>
+</section>
+
+<section class="card">
+  <h2>Account status</h2>
+  {% if member.is_active %}
+    <p class="muted">Disabling prevents this user from signing in. Their sales, job cards and audit history will be retained.</p>
+    <form method="post" data-confirm="Disable this user’s account? They will no longer be able to sign in." >
+      {% csrf_token %}<input type="hidden" name="action" value="disable">
+      <button type="submit" class="btn danger">Disable account</button>
+    </form>
+  {% else %}
+    <p class="muted">This user is disabled and cannot sign in. Re-enable their account to restore access.</p>
+    <form method="post">
+      {% csrf_token %}<input type="hidden" name="action" value="enable">
+      <button type="submit" class="btn primary">Re-enable account</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

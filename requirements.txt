@@ -1,0 +1,8 @@
+Django>=5.2,<7.0
+django-axes>=8.0,<9.0
+django-two-factor-auth>=1.17,<2.0
+whitenoise>=6.6
+waitress>=3.0
+psycopg[binary]>=3.2,<4
+openpyxl>=3.1.5,<4
+defusedxml>=0.7.1,<1

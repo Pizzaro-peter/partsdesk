@@ -1,0 +1,78 @@
+{% extends "base.html" %}{% load ui %}
+{% block title %}Reports & analytics{% endblock %}
+{% block content %}
+<section class="analytics-intro">
+  <div>
+    <p class="eyebrow">Branch performance</p>
+    <h2>Clear numbers. Better decisions.</h2>
+    <p class="muted">A practical snapshot of sales, profit and stock for the selected period.</p>
+  </div>
+  <div class="analytics-intro-actions">
+    <span class="badge b-info">{{ active_branch.name }}</span>
+    <a class="btn" href="{% url 'report_sales' %}?start={{ dates.0|date:'Y-m-d' }}&amp;end={{ dates.1|date:'Y-m-d' }}&amp;csv=1">Download sales CSV</a>
+  </div>
+</section>
+
+<form class="analytics-range no-print" method="get">
+  <div><strong>Reporting period</strong><small>{{ current_period }}</small></div>
+  <label>From <input type="date" name="start" value="{{ dates.0|date:'Y-m-d' }}"></label>
+  <label>To <input type="date" name="end" value="{{ dates.1|date:'Y-m-d' }}"></label>
+  <button class="btn primary" type="submit">Update report</button>
+</form>
+
+<section class="analytics-kpis" aria-label="Sales summary">
+  {% for metric in summary %}
+    <article class="analytics-kpi">
+      <span class="analytics-kpi-label">{{ metric.label }}</span>
+      <strong>
+        {% if metric.kind == "money" %}{% money metric.value %}
+        {% elif metric.kind == "percent" %}{{ metric.value|floatformat:1 }}%
+        {% else %}{{ metric.value }}{% endif %}
+      </strong>
+      <small class="trend trend-{{ metric.comparison.direction }}">{{ metric.comparison.text }}</small>
+    </article>
+  {% endfor %}
+</section>
+
+<section class="card analytics-panel">
+  <header class="analytics-panel-head">
+    <div><p class="eyebrow">Sales performance</p><h2>Net sales over time</h2></div>
+    <span class="muted">Compared with {{ previous_period }}</span>
+  </header>
+  {% if has_sales %}
+    <div class="chart-scroll">
+      <div class="analytics-chart" role="img" aria-label="Net sales chart for {{ current_period }}">
+        {% for point in sales_chart %}
+          <div class="chart-point" title="{{ point.label }}: {% money point.revenue %} net sales, {% money point.profit %} gross profit, {{ point.invoices }} invoices">
+            <span class="chart-value">{% money point.revenue %}</span>
+            <div class="chart-track"><i style="height:{{ point.revenue_pct }}%"></i></div>
+            <span class="chart-label">{{ point.label }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="chart-legend"><span><i></i>Net sales, excluding tax and returned items</span><small>Hover or focus a bar for sales, gross profit and invoice count.</small></div>
+  {% else %}
+    <p class="empty">No sales activity in this period yet.</p>
+  {% endif %}
+</section>
+
+<header class="analytics-section-head">
+  <div><p class="eyebrow">Explore reports</p><h2>What would you like to understand?</h2></div>
+  <small class="muted">Inventory figures reflect the selected branch today.</small>
+</header>
+<section class="reportcards analytics-reportcards">
+  {% for card in cards %}
+    <a class="analytics-report-card tone-{{ card.tone }}" href="{% url card.url %}{% if card.query %}?{{ card.query }}{% endif %}">
+      <span class="report-card-mark" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+      <span class="report-card-copy">
+        <strong>{{ card.title }}</strong>
+        <span class="muted">{{ card.blurb }}</span>
+        <span class="report-card-metric">{{ card.metric }}</span>
+        <span class="report-card-link">Open report <span aria-hidden="true">&rarr;</span></span>
+      </span>
+    </a>
+  {% endfor %}
+</section>
+<p class="analytics-footnote">Sales and profit exclude returned quantities. Gross profit is revenue excluding tax minus recorded cost of goods; it does not include overheads, so net profit is not reported. Receivable age is measured from invoice date; stock receipt age is a recency indicator, not FIFO stock age.</p>
+{% endblock %}

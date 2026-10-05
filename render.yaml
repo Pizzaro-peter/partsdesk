@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: partsdesk
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-lock.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && waitress-serve --listen=0.0.0.0:$PORT config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.2
+      - key: PARTSDESK_DB
+        value: postgres
+      - key: PARTSDESK_DEBUG
+        value: "0"
+      - key: PARTSDESK_SECRET_KEY
+        generateValue: true
+      - key: PARTSDESK_TRUST_PROXY_SSL_HEADER
+        value: "1"
+      - key: PARTSDESK_TZ
+        value: Africa/Lusaka
+      - key: PGHOST
+        sync: false
+      - key: PGDATABASE
+        sync: false
+      - key: PGUSER
+        sync: false
+      - key: PGPASSWORD
+        sync: false
+      - key: PGPORT
+        sync: false

@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<button class="btn" onclick="window.print()">Print</button>{% if can_return %}<a class="btn danger" href="{% url 'sale_return' sale.pk %}">Return items</a>{% endif %}{% endblock %}
+{% block content %}
+<section class="card invoice">
+<header><div><h2>{{ shop.shop_name }}</h2><small>{{ sale.branch.name }} ({{ sale.branch.code }}) · {{ shop.address }}{% if shop.phone %} · {{ shop.phone }}{% endif %}{% if shop.tax_id %} · {{ shop.tax_name }} no. {{ shop.tax_id }}{% endif %}</small></div>
+  <div style="text-align:right"><h2>{{ sale.number }}</h2><small>{{ sale.created_at|date:"j M Y, H:i" }}</small><br><span class="badge {{ sale.status|status_class }}">{{ sale.get_status_display }}</span></div></header>
+<div class="grid2">
+  <div><dt class="muted">Customer</dt><strong>{{ sale.customer.name|default:"Walk-in customer" }}</strong>{% if sale.customer.phone %}<br><small>{{ sale.customer.phone }}</small>{% endif %}{% if sale.vehicle %}<br><small>{{ sale.vehicle }}</small>{% endif %}
+  {% if job %}<br><small><a href="{{ job.get_absolute_url }}">Job card {{ job.number }}</a></small>{% endif %}</div>
+  <div style="text-align:right"><span class="muted">Served by</span><br><strong>{{ sale.created_by.display_name|default:"—" }}</strong><br><small>{{ sale.get_payment_method_display }}</small></div>
+</div>
+<div class="tablewrap" style="margin-top:14px"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Price</th><th class="num">Disc</th><th class="num">Total</th>{% if can_return %}<th class="num">Returned</th>{% endif %}</tr></thead><tbody>
+{% for l in lines %}<tr><td>{{ l.description }}{% if l.part %}<br><small class="mono">{{ l.part.sku }}</small>{% endif %}</td><td class="num">{{ l.quantity|qty }}</td><td class="num">{% money l.unit_price %}</td><td class="num">{% if l.discount_pct %}{{ l.discount_pct }}%{% else %}—{% endif %}</td><td class="num">{% money l.total_incl_tax %}</td>{% if can_return %}<td class="num">{{ l.returned_qty|qty|default:"—" }}</td>{% endif %}</tr>
+{% endfor %}</tbody></table></div>
+<div class="sum" style="margin-top:14px">
+  {% if sale.discount_total %}<div><span>Discount</span><span>-{% money sale.discount_total %}</span></div>{% endif %}
+  <div><span>Subtotal</span><span>{% money sale.subtotal %}</span></div>
+  {% if sale.tax_total %}<div><span>{{ shop.tax_name }}{% if sale.tax_inclusive %} (incl.){% endif %}</span><span>{% money sale.tax_total %}</span></div>{% endif %}
+  <div class="total"><span>Total</span><span>{% money sale.net_total %}</span></div>
+  {% if sale.returned_total %}<div><span>Returned</span><span>-{% money sale.returned_total %}</span></div>{% endif %}
+  <div><span>Paid</span><span>{% money sale.amount_paid %}</span></div>
+  {% if sale.balance_due != 0 %}<div><strong>{{ sale.payment_status }}</strong><strong>{% money sale.balance_due %}</strong></div>{% endif %}
+</div>
+{% if shop.invoice_footer %}<p class="muted" style="margin-top:16px">{{ shop.invoice_footer }}</p>{% endif %}
+</section>
+
+{% if payments %}<section class="card no-print"><h2>Payments</h2><table><tbody>{% for p in payments %}<tr><td>{{ p.created_at|date:"j M Y, H:i" }}</td><td>{{ p.get_method_display }}</td><td class="mono">{{ p.reference }}</td><td class="num">{% money p.amount %}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+{% if sale.balance_due > 0 %}<section class="card no-print"><h2>Record a payment</h2><form method="post" action="{% url 'sale_payment' sale.pk %}" class="inline">{% csrf_token %}
+  {{ pay_form.amount }}{{ pay_form.method }}{{ pay_form.reference }}<button class="btn primary fit">Add payment</button></form>{{ pay_form.amount.errors }}</section>{% endif %}
+{% if returns %}<section class="card no-print"><h2>Returns</h2><table><tbody>{% for r in returns %}<tr><td>{{ r.number }}</td><td>{{ r.created_at|date:"j M Y" }}</td><td>{{ r.reason }}</td><td class="num">{% money r.total %}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+{% endblock %}

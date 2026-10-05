@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block actions %}{% if can_edit %}<a class="btn primary" href="{% url 'vehicle_create' %}">Add vehicle</a>{% endif %}{% endblock %}
+{% block content %}<form class="filters" method="get"><input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search make or model"><button class="btn">Search</button></form>
+<section class="card"><p class="muted">Vehicles a part can fit. Link them to parts from each part's page so counter staff can search by vehicle.</p><div class="tablewrap"><table><thead><tr><th>Make</th><th>Model</th><th>Years</th><th>Engine</th><th></th></tr></thead><tbody>
+{% for v in vehicles %}<tr><td>{{ v.make }}</td><td>{{ v.model }}</td><td>{% if v.year_from == v.year_to %}{{ v.year_from }}{% else %}{{ v.year_from }}–{{ v.year_to }}{% endif %}</td><td>{{ v.engine }}</td><td class="num">{% if can_edit %}<a class="btn sm" href="{% url 'vehicle_edit' v.pk %}">Edit</a>{% endif %}</td></tr>
+{% empty %}<tr><td colspan="5" class="empty">No vehicles yet.</td></tr>{% endfor %}</tbody></table></div>{% include "partials/pagination.html" %}</section>{% endblock %}

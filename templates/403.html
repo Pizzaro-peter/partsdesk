@@ -1,0 +1,2 @@
+{% extends "base.html" %}
+{% block content %}<div class="card"><h2>You don't have access to this page</h2><p class="muted">Your role ({{ user.get_role_display }}) can't open it. Ask the owner or a manager if you need access.</p><a class="btn" href="/">Back to the dashboard</a></div>{% endblock %}

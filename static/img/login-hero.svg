@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 900" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b232b"/><stop offset="1" stop-color="#0b0e11"/></linearGradient>
+<g id="gear"><circle r="100" fill="none" stroke="currentColor" stroke-width="34"/><circle r="40" fill="none" stroke="currentColor" stroke-width="14"/>
+<g stroke="currentColor" stroke-width="34" stroke-linecap="butt"><path d="M0-135v-40M0 135v40M-135 0h-40M135 0h40M95-95l28-28M-95 95l-28 28M95 95l28 28M-95-95l-28-28"/></g></g>
+</defs>
+<rect width="800" height="900" fill="url(#bg)"/>
+<g opacity=".08" stroke="#fff"><path d="M0 150h800M0 300h800M0 450h800M0 600h800M0 750h800M150 0v900M300 0v900M450 0v900M600 0v900"/></g>
+<g color="#f5c400" opacity=".95"><use href="#gear" transform="translate(520 330) scale(1.5)"/></g>
+<g color="#3a4652"><use href="#gear" transform="translate(250 560) scale(1.1)"/></g>
+<g color="#f5c400" opacity=".5"><use href="#gear" transform="translate(640 690) scale(.6)"/></g>
+<g fill="none" stroke="#f5c400" stroke-width="10" stroke-linecap="round" opacity=".9"><path d="M120 190l120 120M140 170l-30 30M250 320l30-30"/></g>
+<rect x="60" y="760" width="680" height="6" fill="#f5c400" opacity=".7"/>
+</svg>

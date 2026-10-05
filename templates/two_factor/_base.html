@@ -1,0 +1,30 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Account security{% endblock %} · PartsDesk</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=responsive-20261004-3">
+</head>
+<body class="auth">
+<main class="auth-split">
+  <section class="auth-pane">
+    <div class="auth-box">
+      <div class="brand" style="border:0;padding:0 0 22px">
+        <span class="brand-mark">PD</span>
+        <div><strong style="color:var(--ink)">PartsDesk</strong><small>Account security</small></div>
+      </div>
+      {% block content_wrapper %}<div class="card">{% block content %}{% endblock %}</div>{% endblock %}
+    </div>
+  </section>
+  <aside class="auth-hero" style="background-image:url('{% static 'img/login-hero.svg' %}')" aria-hidden="true">
+    <div class="auth-hero-text">
+      <h2>Protect access to your business.</h2>
+      <ul><li>Use an authenticator app for time-based codes</li><li>Keep one-time backup codes somewhere safe</li></ul>
+    </div>
+  </aside>
+</main>
+<script src="{% static 'js/app.js' %}?v=responsive-20261004-3"></script>
+</body>
+</html>

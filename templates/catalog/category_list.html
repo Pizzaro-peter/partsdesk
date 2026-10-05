@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block content %}<div class="grid2"><section class="card"><h2>Add a category</h2><form method="post" class="inline">{% csrf_token %}{{ form.name }}<button class="btn primary fit">Add</button></form>{{ form.name.errors }}</section>
+<section class="card"><h2>Categories</h2>{% for c in categories %}<span class="badge" style="margin:2px">{{ c.name }}</span>{% empty %}<p class="muted">None yet: try Brakes, Filters, Engine, Suspension, Electrical.</p>{% endfor %}</section></div>{% endblock %}

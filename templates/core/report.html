@@ -1,0 +1,69 @@
+{% extends "base.html" %}{% load ui %}
+{% block actions %}<a class="btn" href="?{{ request.GET.urlencode }}{% if request.GET %}&{% endif %}csv=1">Download CSV</a><button class="btn no-print" onclick="window.print()">Print</button>
+  {% if post_action %}<form method="post" action="{{ post_action.url }}">{% csrf_token %}<button class="btn primary">{{ post_action.label }}</button></form>{% endif %}{% endblock %}
+{% block content %}
+{% if dates %}<form class="filters no-print" method="get"><label>From <input type="date" name="start" value="{{ dates.0|date:'Y-m-d' }}"></label><label>To <input type="date" name="end" value="{{ dates.1|date:'Y-m-d' }}"></label><button class="btn">Update</button></form>{% endif %}
+{% if extra_filter %}<form class="filters no-print" method="get"><label>{{ extra_filter.label }} <input type="number" min="1" name="{{ extra_filter.name }}" value="{{ extra_filter.value }}"></label><button class="btn">Update</button></form>{% endif %}
+{% if metrics %}
+<section class="analytics-kpis report-kpis" aria-label="Sales summary">
+  {% for metric in metrics %}
+    <article class="analytics-kpi">
+      <span class="analytics-kpi-label">{{ metric.label }}</span>
+      <strong>
+        {% if metric.kind == "money" %}{% money metric.value %}
+        {% elif metric.kind == "percent" %}{{ metric.value|floatformat:1 }}%
+        {% else %}{{ metric.value }}{% endif %}
+      </strong>
+      <small class="trend trend-{{ metric.comparison.direction }}">{{ metric.comparison.text }}</small>
+    </article>
+  {% endfor %}
+</section>
+{% endif %}
+{% if chart %}
+<section class="card analytics-panel">
+  <header class="analytics-panel-head">
+    <div><p class="eyebrow">Daily performance</p><h2>Net sales over time</h2></div>
+    {% if previous_period %}<span class="muted">Previous period: {{ previous_period }}</span>{% endif %}
+  </header>
+  <div class="chart-scroll">
+    <div class="analytics-chart" role="img" aria-label="Net sales chart">
+      {% for point in chart %}
+        <div class="chart-point" title="{{ point.label }}: {% money point.revenue %} net sales, {% money point.profit %} gross profit, {{ point.invoices }} invoices">
+          <span class="chart-value">{% money point.revenue %}</span>
+          <div class="chart-track"><i style="height:{{ point.revenue_pct }}%"></i></div>
+          <span class="chart-label">{{ point.label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="chart-legend"><span><i></i>Net sales, excluding tax and returned items</span><small>Hover a bar for sales, gross profit and invoice count.</small></div>
+</section>
+{% endif %}
+{% if ranked %}
+<section class="card analytics-panel">
+  <header class="analytics-panel-head">
+    <div><p class="eyebrow">Best performers</p><h2>Top 10 by net sales</h2></div>
+    <span class="muted">Sales are shown excluding tax and returned items.</span>
+  </header>
+  <div class="ranked-list">
+    {% for item in ranked %}
+      <div class="ranked-item">
+        <span class="ranked-label" title="{{ item.label }}">{{ forloop.counter }}. {{ item.label }}</span>
+        <span class="ranked-track"><i style="width:{{ item.pct }}%"></i></span>
+        <strong>{% money item.value %}</strong>
+        <small>Profit {% money item.profit %}</small>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+<section class="card">
+  {% if note %}<p class="muted">{{ note }}</p>{% endif %}
+  {% if empty %}<p class="empty">Nothing to show for this selection.</p>{% else %}
+  <div class="tablewrap"><table>
+    <thead><tr>{% for c in columns %}<th class="{% if c.num %}num{% endif %}">{{ c.label }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for r in rows %}<tr>{% for c in r %}<td class="{% if c.num %}num{% endif %}">{{ c.v }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+    {% if totals %}<tfoot><tr>{% for c in totals %}<td class="{% if c.num %}num{% endif %}">{{ c.v }}</td>{% endfor %}</tr></tfoot>{% endif %}
+  </table></div>{% endif %}
+</section>
+{% endblock %}

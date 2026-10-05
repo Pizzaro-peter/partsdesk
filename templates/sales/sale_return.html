@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% load ui %}
+{% block content %}<form method="post" class="card form">{% csrf_token %}
+<p class="muted">Enter the quantity being returned for each item. Restocking puts the items back on the shelf; leave it unticked for damaged or scrapped goods.</p>
+<div class="tablewrap"><table><thead><tr><th>Item</th><th class="num">Sold</th><th class="num">Already returned</th><th class="num">Return qty</th></tr></thead><tbody>
+{% for l in lines %}<tr><td>{{ l.description }}</td><td class="num">{{ l.quantity|qty }}</td><td class="num">{{ l.returned_qty|qty }}</td>
+<td class="num">{% if l.returnable > 0 %}<input type="number" step="any" min="0" max="{{ l.returnable }}" name="qty_{{ l.id }}" style="width:90px"><input type="hidden" name="unit_{{ l.id }}"> / {{ l.returnable|qty }}{% else %}—{% endif %}</td></tr>
+{% endfor %}</tbody></table></div>
+<div class="fields" style="margin-top:14px">
+  <div class="field"><label>Reason</label><input name="reason" placeholder="e.g. wrong part, customer changed mind"></div>
+  <div class="field check"><input type="checkbox" name="restock" id="restock" checked><label for="restock">Put items back in stock</label></div>
+  <div class="field"><label>Refund method</label><select name="refund_method">{% for v, l in methods %}<option value="{{ v }}">{{ l }}</option>{% endfor %}{% if sale.customer %}<option value="account">Credit to account</option>{% endif %}</select></div>
+</div>
+<div class="btns"><button class="btn primary">Process return</button><a class="btn" href="{{ sale.get_absolute_url }}">Cancel</a></div></form>{% endblock %}

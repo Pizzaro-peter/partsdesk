@@ -1,0 +1,82 @@
+{% load static two_factor_tags %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · PartsDesk</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=responsive-20261004-3">
+</head>
+<body class="auth">
+<main class="auth-split">
+  <section class="auth-pane">
+    <div class="auth-box">
+      <div class="brand" style="border:0;padding:0 0 22px">
+        <span class="brand-mark">PD</span>
+        <div><strong style="color:var(--ink)">PartsDesk</strong><small>Parts sales &amp; workshop management</small></div>
+      </div>
+      {% if wizard.steps.current == "auth" %}
+        <h1 class="auth-title">Welcome back</h1>
+        <p class="auth-sub muted">Sign in to manage sales, stock, procurement and job cards for your business.</p>
+      {% elif wizard.steps.current == "token" %}
+        <h1 class="auth-title">Authenticator code</h1>
+        <p class="auth-sub muted">Enter the current code from your authenticator app.</p>
+      {% elif wizard.steps.current == "backup" %}
+        <h1 class="auth-title">Backup code</h1>
+        <p class="auth-sub muted">Enter one of your saved backup codes. Each code can only be used once.</p>
+      {% endif %}
+      <form method="post" class="form stack">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+        {% if wizard.form.non_field_errors %}<ul class="errorlist">{{ wizard.form.non_field_errors }}</ul>{% endif %}
+        {% for field in wizard.form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.name == "password" %}
+              <div class="password-input">
+                {{ field }}
+                <button type="button" class="password-toggle" data-password-toggle
+                        aria-controls="{{ field.id_for_label }}" aria-label="Show password"
+                        title="Show password" aria-pressed="false">
+                  <svg class="eye-show" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-hide" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.9M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.8 10.8 0 0 0 4.2-.9"/></svg>
+                </button>
+              </div>
+            {% else %}
+              {{ field }}
+            {% endif %}
+            {% if field.errors %}<ul class="errorlist">{{ field.errors }}</ul>{% endif %}
+            {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+          </div>
+        {% endfor %}
+        {% if other_devices %}
+          <p class="muted">Or choose another configured authentication method:</p>
+          {% for other in other_devices %}
+            <button name="challenge_device" value="{{ other.persistent_id }}" class="btn" type="submit">{{ other|as_action }}</button>
+          {% endfor %}
+        {% endif %}
+        {% if backup_tokens %}
+          <button name="wizard_goto_step" type="submit" value="backup" class="btn">Use a backup code</button>
+        {% endif %}
+        <div class="inline">
+          {% if wizard.steps.prev %}
+            <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn">Back</button>
+          {% endif %}
+          <button class="btn primary lg" type="submit" style="width:100%;justify-content:center">
+            {% if wizard.steps.current == "auth" %}Sign in{% else %}Continue{% endif %}
+          </button>
+        </div>
+      </form>
+      <p class="auth-help muted">Forgot your password? Ask your business owner or manager to reset it.</p>
+    </div>
+  </section>
+  <aside class="auth-hero" style="background-image:url('{% static 'img/login-hero.svg' %}')" aria-hidden="true">
+    <div class="auth-hero-text">
+      <h2>One desk for parts, stock and the workshop.</h2>
+      <ul><li>Fast point of sale with held sales</li><li>Branch-level stock and procurement</li><li>Job cards, invoices and audit trail</li></ul>
+    </div>
+  </aside>
+</main>
+<script src="{% static 'js/app.js' %}?v=responsive-20261004-3"></script>
+</body>
+</html>
