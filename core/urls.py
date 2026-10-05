@@ -4,6 +4,8 @@ from . import views
 
 urlpatterns = [
     path("audit/print-request/", views.log_print_request, name="log_print_request"),
+    path("signup/", views.signup, name="signup"),
+    path("onboarding/branch/", views.branch_onboarding, name="branch_onboarding"),
     path("switch-branch/", views.switch_branch, name="switch_branch"),
     path("profile/", views.profile, name="profile"),
     path("branches/", views.branches, name="branches"),

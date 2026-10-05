@@ -6,7 +6,8 @@ from unittest.mock import patch
 
 from django.core.exceptions import PermissionDenied
 from django.core.management import call_command
-from django.test import Client, TestCase
+from django.core.cache import cache
+from django.test import Client, RequestFactory, TestCase
 from django.utils import timezone
 from django.urls import reverse
 
@@ -104,6 +105,22 @@ class TenantIsolationTests(TestCase):
         item = BranchStock.objects.get(branch=east, part=self.part_a)
         self.assertEqual(item.quantity_on_hand, 0)
         self.assertFalse(BranchStock.objects.filter(branch=east, part=self.part_b).exists())
+
+    def test_tenant_cannot_create_more_than_five_branches(self):
+        self.client.force_login(self.owner)
+        for index in range(3):
+            Branch.objects.create(tenant=self.a, name=f"Extra {index}", code=f"EX{index}")
+        Branch.objects.filter(tenant=self.a, code="WEST").update(is_active=False)
+
+        response = self.client.post(reverse("branches"), {
+            "name": "Sixth branch",
+            "code": "SIXTH",
+            "is_active": "on",
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Branch limit reached (5 maximum).")
+        self.assertEqual(Branch.objects.filter(tenant=self.a).count(), 5)
 
     def test_new_catalog_part_is_shared_with_separate_branch_stock(self):
         self.client.force_login(self.owner)
@@ -243,6 +260,7 @@ class TenantIsolationTests(TestCase):
         self.assertTrue(AuditLog.objects.filter(
             tenant=self.a, user=self.owner, action="user.branch_access.add", target=self.staff.username,
         ).exists())
+
 
     def test_owner_cannot_assign_staff_to_another_tenant_branch(self):
         self.client.force_login(self.owner)
@@ -494,6 +512,97 @@ class TenantIsolationTests(TestCase):
         self.assertEqual([[cell["v"] for cell in row] for row in response.context["rows"]],
                          [["A supplier", "1", "7.0"]])
         self.assertContains(response, "time to first delivery")
+
+
+class PublicSignupTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.signup_data = {
+            "business_name": "North Star Auto Parts",
+            "first_name": "Alex",
+            "last_name": "Owner",
+            "username": "northstar_owner",
+            "email": "alex@example.com",
+            "password1": "Quasar-River-Tulip-753!",
+            "password2": "Quasar-River-Tulip-753!",
+            "website": "",
+        }
+
+    def test_login_page_offers_public_business_signup(self):
+        response = self.client.get(reverse("two_factor:login"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, reverse("signup"))
+
+    def test_signup_creates_owner_and_tenant_then_requires_first_branch(self):
+        response = self.client.post(reverse("signup"), self.signup_data)
+
+        self.assertRedirects(response, reverse("branch_onboarding"))
+        user = User.objects.get(username="northstar_owner")
+        self.assertEqual(user.role, User.Role.OWNER)
+        self.assertEqual(user.first_name, "Alex")
+        self.assertEqual(user.email, "alex@example.com")
+        self.assertTrue(user.check_password(self.signup_data["password1"]))
+        self.assertTrue(user.tenant_id)
+        self.assertEqual(user.tenant.name, "North Star Auto Parts")
+        self.assertTrue(ShopSettings.objects.filter(tenant=user.tenant).exists())
+        self.assertFalse(Branch.objects.filter(tenant=user.tenant).exists())
+        self.assertIn("_auth_user_id", self.client.session)
+
+    def test_signup_rejects_password_mismatch_without_creating_records(self):
+        data = {**self.signup_data, "password2": "Different-Password-483!"}
+
+        response = self.client.post(reverse("signup"), data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "The passwords do not match.")
+        self.assertFalse(User.objects.filter(username="northstar_owner").exists())
+        self.assertFalse(Tenant.objects.filter(name="North Star Auto Parts").exists())
+
+    def test_signup_honeypot_rejects_bot_submission_without_creating_records(self):
+        data = {**self.signup_data, "website": "spam"}
+
+        response = self.client.post(reverse("signup"), data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Unable to process this signup.")
+        self.assertFalse(User.objects.filter(username="northstar_owner").exists())
+        self.assertFalse(Tenant.objects.exists())
+
+    def test_signup_throttles_repeated_attempts(self):
+        request = RequestFactory().post(reverse("signup"))
+        request.META["REMOTE_ADDR"] = "198.51.100.55"
+        from core.views import _signup_rate_limited
+
+        self.assertEqual([_signup_rate_limited(request) for _ in range(10)], [False] * 10)
+        self.assertTrue(_signup_rate_limited(request))
+        with patch("core.views._signup_rate_limited", return_value=True):
+            response = self.client.post(reverse("signup"), self.signup_data)
+
+        self.assertEqual(response.status_code, 429)
+        self.assertContains(response, "Too many signup attempts", status_code=429)
+        self.assertFalse(Tenant.objects.exists())
+
+    def test_first_branch_onboarding_is_resumable_and_assigns_owner_access(self):
+        signup_response = self.client.post(reverse("signup"), self.signup_data)
+        self.assertRedirects(signup_response, reverse("branch_onboarding"))
+        user = User.objects.get(username="northstar_owner")
+
+        dashboard_response = self.client.get(reverse("dashboard"))
+
+        self.assertRedirects(dashboard_response, reverse("branch_onboarding"))
+        response = self.client.post(reverse("branch_onboarding"), {
+            "name": "Central",
+            "code": "CENTRAL",
+        })
+
+        self.assertRedirects(response, reverse("dashboard"))
+        branch = Branch.objects.get(tenant=user.tenant, code="CENTRAL")
+        user.refresh_from_db()
+        self.assertEqual(user.role, User.Role.OWNER)
+        self.assertIn(branch, user.branches.all())
+        self.assertEqual(self.client.session["branch_id"], branch.pk)
+        self.assertEqual(self.client.get(reverse("dashboard")).status_code, 200)
 
 
 class RequestLogRetentionTests(TestCase):

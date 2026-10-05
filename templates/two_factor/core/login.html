@@ -67,6 +67,9 @@
           </button>
         </div>
       </form>
+      {% if wizard.steps.current == "auth" %}
+        <p class="auth-help muted">New to PartsDesk? <a href="{% url 'signup' %}">Create a business account</a></p>
+      {% endif %}
       <p class="auth-help muted">Forgot your password? Ask your business owner or manager to reset it.</p>
     </div>
   </section>

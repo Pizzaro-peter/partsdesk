@@ -14,6 +14,7 @@ SALES = (OWNER, MANAGER, COUNTER)             # point of sale, invoices
 STOCK = (OWNER, MANAGER, STOREKEEPER)         # catalog edits, purchasing, adjustments
 FRONT = (OWNER, MANAGER, COUNTER, MECHANIC)   # customers and job cards
 OWNER_ONLY = (OWNER,)
+MAX_TENANT_BRANCHES = 5
 
 
 def role_required(roles=None):

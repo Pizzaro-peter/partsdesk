@@ -1,9 +1,17 @@
 from datetime import date, timedelta
 from decimal import Decimal
+import hashlib
+import hmac
+import uuid
 
+from django.contrib.auth import login
+from django.conf import settings
+from django.core.cache import cache
+from django.db import IntegrityError, transaction
 from django.db.models import Count, DecimalField, F, Max, Min, Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.text import slugify
 from django.views.generic import UpdateView
 from django.core.paginator import Paginator
 from django import forms
@@ -13,11 +21,15 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_http_methods
 
 from catalog.models import BranchStock, Part
-from core.models import AuditLog, Branch, ShopSettings
-from core.permissions import FRONT, MGMT, OWNER_ONLY, SALES, RoleRequiredMixin, role_required
+from core.models import AuditLog, Branch, ShopSettings, Tenant, User
+from core.permissions import (
+    FRONT, MGMT, MAX_TENANT_BRANCHES, OWNER_ONLY, SALES, RoleRequiredMixin, role_required,
+)
 from core.tenancy import allowed_branches
 from core.utils import csv_response, money_str, optional_id, qty_str
 from sales.models import Customer, Sale, SaleLine
@@ -27,8 +39,163 @@ from workshop.models import JobCard
 
 ZERO = Decimal("0")
 DEC = DecimalField(max_digits=16, decimal_places=2)
+SIGNUP_LIMIT = 10
+SIGNUP_WINDOW_SECONDS = 60 * 60
 
 
+class SignupForm(forms.Form):
+    business_name = forms.CharField(max_length=120)
+    first_name = forms.CharField(max_length=150)
+    last_name = forms.CharField(max_length=150)
+    username = forms.CharField(max_length=150)
+    email = forms.EmailField(label="Email address (optional)", required=False)
+    password1 = forms.CharField(
+        label="Password",
+        strip=False,
+        widget=forms.PasswordInput,
+        help_text="Use at least 12 characters; avoid common passwords and personal details.",
+    )
+    password2 = forms.CharField(
+        label="Confirm password", strip=False, widget=forms.PasswordInput,
+    )
+    website = forms.CharField(required=False, widget=forms.HiddenInput)
+
+    def clean_username(self):
+        UserModel = get_user_model()
+        username = UserModel._meta.get_field("username").clean(
+            self.cleaned_data["username"], None
+        )
+        if UserModel.objects.filter(username__iexact=username).exists():
+            raise ValidationError("That username is already in use.")
+        return username
+
+    def clean(self):
+        cleaned = super().clean()
+        if cleaned.get("website"):
+            raise ValidationError("Unable to process this signup.")
+        password = cleaned.get("password1")
+        if password and password != cleaned.get("password2"):
+            self.add_error("password2", "The passwords do not match.")
+        elif password and cleaned.get("username"):
+            UserModel = get_user_model()
+            candidate = UserModel(
+                username=cleaned["username"],
+                first_name=cleaned.get("first_name", ""),
+                last_name=cleaned.get("last_name", ""),
+                email=cleaned.get("email", ""),
+            )
+            try:
+                validate_password(password, user=candidate)
+            except ValidationError as error:
+                self.add_error("password1", error)
+        return cleaned
+
+
+class FirstBranchForm(forms.Form):
+    name = forms.CharField(max_length=120, initial="Main branch")
+    code = forms.RegexField(
+        regex=r"^[A-Za-z0-9-]+$",
+        max_length=16,
+        initial="MAIN",
+        help_text="Use letters, numbers, or hyphens.",
+    )
+
+    def clean_code(self):
+        return self.cleaned_data["code"].upper()
+
+
+def _signup_rate_limited(request):
+    remote_address = request.META.get("REMOTE_ADDR", "")
+    key = hmac.new(
+        settings.SECRET_KEY.encode("utf-8"),
+        remote_address.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    cache_key = f"partsdesk:signup:{key}"
+    if cache.add(cache_key, 1, timeout=SIGNUP_WINDOW_SECONDS):
+        attempts = 1
+    else:
+        try:
+            attempts = cache.incr(cache_key)
+        except ValueError:
+            cache.add(cache_key, 1, timeout=SIGNUP_WINDOW_SECONDS)
+            attempts = cache.get(cache_key, 1)
+    return attempts > SIGNUP_LIMIT
+
+
+@require_http_methods(["GET", "POST"])
+def signup(request):
+    if request.user.is_authenticated:
+        if request.user.tenant_id and not Branch.objects.filter(tenant_id=request.user.tenant_id).exists():
+            return redirect("branch_onboarding")
+        return redirect("dashboard")
+
+    limited = request.method == "POST" and _signup_rate_limited(request)
+    form = SignupForm(request.POST if request.method == "POST" else None)
+    if limited:
+        form.full_clean()
+        form.add_error(None, "Too many signup attempts. Please try again in an hour.")
+    elif request.method == "POST" and form.is_valid():
+        data = form.cleaned_data
+        try:
+            with transaction.atomic():
+                slug = f"{slugify(data['business_name'])[:110] or 'business'}-{uuid.uuid4().hex[:10]}"
+                tenant = Tenant.objects.create(name=data["business_name"], slug=slug)
+                ShopSettings.objects.create(tenant=tenant, shop_name=data["business_name"])
+                user = get_user_model().objects.create_user(
+                    username=data["username"],
+                    password=data["password1"],
+                    first_name=data["first_name"],
+                    last_name=data["last_name"],
+                    email=data["email"],
+                    role=User.Role.OWNER,
+                    tenant=tenant,
+                )
+        except IntegrityError:
+            if not get_user_model().objects.filter(username__iexact=data["username"]).exists():
+                raise
+            form.add_error("username", "That username is already in use. Please choose another.")
+            return render(request, "registration/signup.html", {"form": form})
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        return redirect("branch_onboarding")
+    return render(
+        request, "registration/signup.html", {"form": form},
+        status=429 if limited else 200,
+    )
+
+
+@require_http_methods(["GET", "POST"])
+def branch_onboarding(request):
+    if not request.user.is_authenticated:
+        return redirect(f"{reverse('two_factor:login')}?next={reverse('branch_onboarding')}")
+    if request.user.role != User.Role.OWNER or not request.user.tenant_id:
+        from django.core.exceptions import PermissionDenied
+
+        raise PermissionDenied("Only a business owner can complete initial branch setup.")
+    existing_branch = Branch.objects.filter(tenant_id=request.user.tenant_id).first()
+    if existing_branch:
+        if existing_branch.is_active:
+            request.session["branch_id"] = existing_branch.pk
+            return redirect("dashboard")
+        form = FirstBranchForm(request.POST if request.method == "POST" else None)
+        form.add_error(None, "Your existing branches are inactive. Ask an administrator to reactivate one.")
+        return render(request, "registration/branch_onboarding.html", {"form": form})
+
+    form = FirstBranchForm(request.POST if request.method == "POST" else None)
+    if request.method == "POST" and form.is_valid():
+        with transaction.atomic():
+            tenant = Tenant.objects.select_for_update().get(pk=request.user.tenant_id)
+            if Branch.objects.filter(tenant=tenant).exists():
+                return redirect("branch_onboarding")
+            branch = Branch.objects.create(
+                tenant=tenant,
+                name=form.cleaned_data["name"],
+                code=form.cleaned_data["code"],
+            )
+            request.user.branches.add(branch)
+        request.session["branch_id"] = branch.pk
+        return redirect("dashboard")
+    return render(request, "registration/branch_onboarding.html", {"form": form})
 def _low_stock_qs(branch):
     return BranchStock.objects.filter(branch=branch, part__is_active=True, reorder_level__gt=0,
                                       quantity_on_hand__lte=F("reorder_level")).select_related("part", "part__preferred_supplier")
@@ -665,21 +832,28 @@ def branches(request):
     form = BranchForm(request.POST or None)
     all_b = list(Branch.objects.filter(tenant=request.tenant))
     if request.method == "POST" and form.is_valid():
-        branch = form.save(commit=False)
-        branch.tenant = request.tenant
-        if Branch.objects.filter(tenant=request.tenant, code=branch.code).exists():
-            form.add_error("code", "Code already exists for this business.")
-        else:
-            branch.save()
-            BranchStock.objects.bulk_create(
-                [BranchStock(branch=branch, part=p, cost_price=p.cost_price)
-                 for p in Part.objects.filter(tenant=request.tenant)],
-                ignore_conflicts=True)
-            messages.success(request, "Branch created.")
-            return redirect("branches")
+        with transaction.atomic():
+            Tenant.objects.select_for_update().get(pk=request.tenant.pk)
+            branch = form.save(commit=False)
+            branch.tenant = request.tenant
+            if Branch.objects.filter(tenant=request.tenant, code=branch.code).exists():
+                form.add_error("code", "Code already exists for this business.")
+            elif Branch.objects.filter(tenant=request.tenant).count() >= MAX_TENANT_BRANCHES:
+                form.add_error(None, f"A business can have at most {MAX_TENANT_BRANCHES} branches.")
+            else:
+                branch.save()
+                BranchStock.objects.bulk_create(
+                    [BranchStock(branch=branch, part=p, cost_price=p.cost_price)
+                     for p in Part.objects.filter(tenant=request.tenant)],
+                    ignore_conflicts=True)
+                messages.success(request, "Branch created.")
+                return redirect("branches")
+        all_b = list(Branch.objects.filter(tenant=request.tenant))
     return render(request, "core/branches.html", {"page_title": "Branches", "form": form,
             "all_branches": all_b, "active_count": sum(b.is_active for b in all_b),
-            "inactive_count": sum(not b.is_active for b in all_b)})
+            "inactive_count": sum(not b.is_active for b in all_b),
+            "branch_limit_reached": len(all_b) >= MAX_TENANT_BRANCHES,
+            "max_tenant_branches": MAX_TENANT_BRANCHES})
 
 
 @role_required(OWNER_ONLY)

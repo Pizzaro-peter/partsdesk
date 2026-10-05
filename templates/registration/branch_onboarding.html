@@ -1,0 +1,46 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Set up your first branch · PartsDesk</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}?v=signup-onboarding-20261005">
+</head>
+<body class="auth">
+<main class="auth-split">
+  <section class="auth-pane">
+    <div class="auth-box">
+      <div class="brand" style="border:0;padding:0 0 22px">
+        <span class="brand-mark">PD</span>
+        <div><strong style="color:var(--ink)">PartsDesk</strong><small>{{ request.user.tenant.name }}</small></div>
+      </div>
+      <h1 class="auth-title">Set up your first branch</h1>
+      <p class="auth-sub muted">A branch is a shop location with its own stock, sales and workshop records.</p>
+      <form method="post" class="form stack">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<ul class="errorlist">{{ form.non_field_errors }}</ul>{% endif %}
+        {% for field in form %}
+          <div class="field">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<ul class="errorlist">{{ field.errors }}</ul>{% endif %}
+            {% if field.help_text %}<small class="muted">{{ field.help_text }}</small>{% endif %}
+          </div>
+        {% endfor %}
+        <button class="btn primary lg" type="submit" style="width:100%;justify-content:center">Create branch and continue</button>
+      </form>
+      <form method="post" action="{% url 'logout' %}" class="auth-help">
+        {% csrf_token %}<button class="btn" type="submit">Sign out</button>
+      </form>
+    </div>
+  </section>
+  <aside class="auth-hero" style="background-image:url('{% static 'img/login-hero.svg' %}')" aria-hidden="true">
+    <div class="auth-hero-text">
+      <h2>Your first location is the starting point.</h2>
+      <ul><li>Choose a clear branch name</li><li>Use a short, unique branch code</li><li>Add up to four more branches later</li></ul>
+    </div>
+  </aside>
+</main>
+</body>
+</html>

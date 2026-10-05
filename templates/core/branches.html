@@ -2,8 +2,12 @@
 {% block page_heading %}Branches{% endblock %}
 {% block content %}
 <div class="admin-bar">
-  <p class="muted">Locations that hold stock and take sales. Each branch keeps its own stock levels.</p>
-  <button type="button" class="btn primary" data-open="add-modal">+ Add branch</button>
+  <p class="muted">Locations that hold stock and take sales. Each keeps separate stock. Limit: {{ max_tenant_branches }} branches per business.</p>
+  {% if branch_limit_reached %}
+    <span class="muted">Branch limit reached ({{ max_tenant_branches }} maximum).</span>
+  {% else %}
+    <button type="button" class="btn primary" data-open="add-modal">+ Add branch</button>
+  {% endif %}
 </div>
 <div class="kpis admin-kpis">
   <div class="kpi"><span class="kpi-label">Total branches</span><strong>{{ all_branches|length }}</strong></div>
@@ -21,6 +25,7 @@
   </table>
 </div>
 
+{% if not branch_limit_reached %}
 <div class="modal-wrap" id="add-modal" {% if not form.errors %}hidden{% endif %}>
   <div class="modal modal-form" role="dialog" aria-modal="true" aria-labelledby="add-title">
     <div class="modal-head"><h2 id="add-title">Add branch</h2><button type="button" class="btn sm" data-close aria-label="Close">&times;</button></div>
@@ -33,5 +38,6 @@
     </form>
   </div>
 </div>
+{% endif %}
 {% include "partials/admin_modal_js.html" %}
 {% endblock %}
