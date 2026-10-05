@@ -768,6 +768,20 @@ def audit_list(request):
         'audit_branches':allowed,'branch_value':branch_value,'audit_users':User.objects.filter(tenant=request.tenant)})
 
 
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "username"]
+
+    def clean_username(self):
+        username = User._meta.get_field("username").clean(
+            self.cleaned_data["username"], self.instance
+        )
+        if User.objects.filter(username__iexact=username).exclude(pk=self.instance.pk).exists():
+            raise ValidationError("That username is already in use.")
+        return username
+
+
 class ShopSettingsForm(forms.ModelForm):
     tax_rate = forms.DecimalField(min_value=0, max_value=100, max_digits=5, decimal_places=2)
     counter_max_discount = forms.DecimalField(min_value=0, max_value=100, max_digits=5, decimal_places=2)
@@ -798,9 +812,26 @@ class ShopSettingsView(RoleRequiredMixin, UpdateView):
 @role_required()
 def profile(request):
     user = request.user
+    form = ProfileUpdateForm(
+        request.POST if request.method == "POST" else None,
+        instance=user,
+    )
+    if request.method == "POST" and form.is_valid():
+        try:
+            form.save()
+        except IntegrityError:
+            if not User.objects.filter(username__iexact=form.cleaned_data["username"]).exclude(
+                pk=user.pk
+            ).exists():
+                raise
+            form.add_error("username", "That username is already in use.")
+        else:
+            messages.success(request, "Your profile was updated.")
+            return redirect("profile")
     return render(request, "core/profile.html", {
         "page_title": "My profile",
         "tenant": request.tenant,
+        "form": form,
         "branches": allowed_branches(user),
         "recent": AuditLog.objects.filter(user=user, tenant=request.tenant).select_related("branch")[:15],
     })

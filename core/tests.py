@@ -166,6 +166,43 @@ class TenantIsolationTests(TestCase):
         self.assertContains(response, 'aria-label="Show password"')
         self.assertContains(response, 'class="eye-show"')
 
+    def test_user_can_update_own_name_and_username(self):
+        self.client.force_login(self.owner)
+
+        response = self.client.post(reverse("profile"), {
+            "first_name": "Peter",
+            "last_name": "Simukanzye",
+            "username": "peter-auto-owner",
+        }, follow=True)
+
+        self.assertEqual(response.redirect_chain, [(reverse("profile"), 302)])
+        self.assertContains(response, "Your profile was updated.")
+        self.owner.refresh_from_db()
+        self.assertEqual(self.owner.first_name, "Peter")
+        self.assertEqual(self.owner.last_name, "Simukanzye")
+        self.assertEqual(self.owner.username, "peter-auto-owner")
+        self.assertEqual(self.owner.tenant, self.a)
+        self.assertEqual(self.owner.role, User.Role.OWNER)
+        self.assertIn("_auth_user_id", self.client.session)
+        self.assertTrue(AuditLog.objects.filter(
+            tenant=self.a, user=self.owner, action="user.update", target="peter-auto-owner",
+        ).exists())
+
+    def test_user_cannot_claim_another_users_username_with_different_case(self):
+        self.client.force_login(self.owner)
+        original_username = self.owner.username
+
+        response = self.client.post(reverse("profile"), {
+            "first_name": "Peter",
+            "last_name": "Owner",
+            "username": self.staff.username.upper(),
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "That username is already in use.")
+        self.owner.refresh_from_db()
+        self.assertEqual(self.owner.username, original_username)
+
     def test_totp_is_optional_and_user_can_enroll(self):
         password = "Optional-TOTP-test-password-482!"
         self.staff.set_password(password)

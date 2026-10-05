@@ -3,10 +3,21 @@
 {% block content %}
 <div class="profile-grid">
   <section class="card">
+    <h2>Personal details</h2>
+    <form method="post" class="form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<p class="errbox">{{ form.non_field_errors }}</p>{% endif %}
+      <div class="fields">{% for field in form %}
+        <div class="field">
+          {{ field.label_tag }}{{ field }}
+          {% for error in field.errors %}<small class="errbox">{{ error }}</small>{% endfor %}
+        </div>
+      {% endfor %}</div>
+      <button class="btn primary" type="submit">Save profile</button>
+    </form>
+    <hr>
     <h2>Account</h2>
     <dl class="kv">
-      <dt>Name</dt><dd>{{ user.display_name }}</dd>
-      <dt>Username</dt><dd>{{ user.username }}</dd>
       <dt>Email</dt><dd>{{ user.email|default:"—" }}</dd>
       <dt>Role</dt><dd>{{ user.get_role_display }}</dd>
       <dt>Business</dt><dd>{{ tenant.name }}</dd>

@@ -19,6 +19,8 @@ python manage.py runserver
 
 Public signup is available from the sign-in page. It creates the business and owner account in one transaction, then requires the owner to create the first branch before reaching the dashboard. Owners can create up to five branches per business; inactive branches count toward that limit. Passwords use the configured Django validators. Signup attempts are limited to ten per hour per server-observed source address using the configured Django cache; behind a reverse proxy this can be the proxy's address, so verify trusted client-IP handling and tune the limit before public production use. The default local-memory cache is suitable only for a single application process; use a shared cache before scaling to multiple instances. Email is optional and is not verified; outbound email and self-service password recovery are not configured.
 
+Users can update their own first name, last name, and username from **My profile**. Usernames are checked case-insensitively for duplicates.
+
 To import parts, specify both the business and destination branch:
 
 ```bash
