@@ -19,12 +19,28 @@ services:
       - key: PARTSDESK_TZ
         value: Africa/Lusaka
       - key: PGHOST
-        sync: false
+        fromDatabase:
+          name: partsdesk-db
+          property: host
       - key: PGDATABASE
-        sync: false
+        fromDatabase:
+          name: partsdesk-db
+          property: database
       - key: PGUSER
-        sync: false
+        fromDatabase:
+          name: partsdesk-db
+          property: user
       - key: PGPASSWORD
-        sync: false
+        fromDatabase:
+          name: partsdesk-db
+          property: password
       - key: PGPORT
-        sync: false
+        fromDatabase:
+          name: partsdesk-db
+          property: port
+
+databases:
+  - name: partsdesk-db
+    databaseName: partsdesk
+    user: partsdesk
+    plan: free
